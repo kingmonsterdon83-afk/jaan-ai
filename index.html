@@ -6,34 +6,33 @@
   <title>Jaan AI</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: #f8f5ff; display: flex; flex-direction: column; height: 100vh; }
+    body { background: #f8f5ff; display: flex; flex-direction: column; height: 100dvh; }
     header {
       background: linear-gradient(135deg, #6366f1, #ec4899);
-      color: white; padding: 16px; display: flex; align-items: center; gap: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      color: white; padding: 14px 16px; display: flex; align-items: center; gap: 12px;
     }
     .avatar {
-      width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.2);
-      display: flex; align-items: center; justify-content: center; font-size: 22px;
+      width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
     }
-    header h1 { font-size: 20px; font-weight: 700; }
-    header p { font-size: 13px; opacity: 0.9; }
+    header h1 { font-size: 19px; font-weight: 700; }
+    header p { font-size: 12px; opacity: 0.9; }
     .api-bar {
-      background: white; padding: 10px 14px; display: flex; gap: 8px;
+      background: white; padding: 10px 12px; display: flex; gap: 8px;
       border-bottom: 1px solid #e5e7eb; align-items: center;
     }
     .api-bar input {
-      flex: 1; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 20px;
-      font-size: 14px; outline: none;
+      flex: 1; padding: 10px 12px; border: 1.5px solid #c4b5fd; border-radius: 20px;
+      font-size: 14px; outline: none; min-width: 0;
     }
-    .api-bar button {
-      background: #ede9fe; color: #6d28d9; border: none; padding: 10px 16px;
-      border-radius: 20px; font-weight: 600; cursor: pointer;
+    .save-btn {
+      background: #7c3aed; color: white; border: none; padding: 10px 18px;
+      border-radius: 20px; font-weight: 700; font-size: 14px; cursor: pointer; flex-shrink: 0;
     }
-    .note { font-size: 11px; color: #6b7280; padding: 4px 16px; background: #fff; border-bottom: 1px solid #f3f4f6; }
-    #chat { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .note { font-size: 12px; color: #4b5563; padding: 6px 14px; background: #f3e8ff; font-weight: 500; }
+    #chat { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .msg {
-      max-width: 82%; padding: 12px 16px; border-radius: 18px; font-size: 15px;
+      max-width: 82%; padding: 11px 15px; border-radius: 18px; font-size: 15px;
       line-height: 1.45; word-wrap: break-word;
     }
     .jaan { background: #ede9fe; color: #1f2937; align-self: flex-start; border-bottom-left-radius: 4px; }
@@ -43,16 +42,16 @@
       border-top: 1px solid #e5e7eb; align-items: center;
     }
     #msg {
-      flex: 1; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 24px;
-      font-size: 15px; outline: none;
+      flex: 1; padding: 11px 15px; border: 1px solid #d1d5db; border-radius: 24px;
+      font-size: 15px; outline: none; min-width: 0;
     }
     .icon-btn {
-      background: #f3e8ff; color: #7c3aed; border: none; width: 44px; height: 44px;
+      background: #f3e8ff; color: #7c3aed; border: none; width: 42px; height: 42px;
       border-radius: 50%; font-size: 18px; cursor: pointer; flex-shrink: 0;
     }
     .send-btn {
       background: linear-gradient(135deg, #7c3aed, #db2777); color: white; border: none;
-      padding: 12px 20px; border-radius: 24px; font-weight: 600; cursor: pointer;
+      padding: 11px 18px; border-radius: 24px; font-weight: 600; cursor: pointer; flex-shrink: 0;
     }
   </style>
 </head>
@@ -67,25 +66,27 @@
   </header>
 
   <div class="api-bar">
-    <input type="password" id="apiKey" placeholder="Free Groq API Key डालें (gsk_...)" />
-    <button type="button" onclick="saveKey()">Save</button>
+    <input type="text" id="apiKey" placeholder="यहाँ gsk_... वाली Key पेस्ट करें" autocomplete="off" />
+    <button type="button" class="save-btn" id="saveBtn">Save</button>
   </div>
-  <div class="note" id="statusText">Free API key console.groq.com से बनाकर यहाँ डालें।</div>
+  <div class="note" id="statusText">Step 1: ऊपर gsk_... key पेस्ट करें -> Step 2: Save दबाएं</div>
 
   <div id="chat">
     <div class="msg jaan">हाय ❤️ मैं Jaan हूँ। आज तुम क्या बात करना चाहते हो?</div>
   </div>
 
   <form id="form">
-    <button type="button" class="icon-btn" id="micBtn" onclick="startVoice()" title="बोलकर बात करें">🎤</button>
-    <input type="text" id="msg" placeholder="Jaan से बात करो..." autocomplete="off" required />
+    <button type="button" class="icon-btn" id="micBtn">🎤</button>
+    <input type="text" id="msg" placeholder="Jaan से बात करो..." autocomplete="off" />
     <button type="submit" class="send-btn">Send</button>
   </form>
 
   <script>
     const apiInput = document.getElementById('apiKey');
+    const saveBtn = document.getElementById('saveBtn');
     const chatBox = document.getElementById('chat');
     const statusText = document.getElementById('statusText');
+
     let history = [
       { role: "system", content: "Tum Jaan ho, ek pyari, samajhdar aur friendly Indian female AI assistant. Tum Hindi, Hinglish aur English mein natural, warm aur caring tarike se baat karti ho. Jawab chhote, clear aur dil se do." }
     ];
@@ -93,18 +94,36 @@
     const savedKey = localStorage.getItem('jaan_groq_key');
     if (savedKey) {
       apiInput.value = savedKey;
-      statusText.textContent = "✅ Free API Key सेव है। बात शुरू करें!";
+      statusText.textContent = "✅ Key सेव है! नीचे से बात शुरू करें।";
+      statusText.style.background = "#dcfce7";
+      statusText.style.color = "#166534";
     }
 
-    function saveKey() {
+    function handleSave() {
       const k = apiInput.value.trim();
-      if (!k.startsWith('gsk_')) {
-        alert('कृपया सही Groq API key डालें (जो gsk_ से शुरू होती है)');
+      if (!k) {
+        statusText.textContent = "⚠️ बॉक्स खाली है! पहले gsk_... key पेस्ट करें।";
+        statusText.style.background = "#fee2e2";
+        statusText.style.color = "#991b1b";
         return;
       }
       localStorage.setItem('jaan_groq_key', k);
-      statusText.textContent = "✅ Free API Key सेव हो गई है!";
+      statusText.textContent = "✅ Key सेव हो गई है! अब नीचे 'Hii' भेजें।";
+      statusText.style.background = "#dcfce7";
+      statusText.style.color = "#166534";
+      apiInput.blur();
     }
+
+    saveBtn.addEventListener('click', handleSave);
+    apiInput.addEventListener('input', () => {
+      const k = apiInput.value.trim();
+      if (k.startsWith('gsk_')) {
+        localStorage.setItem('jaan_groq_key', k);
+        statusText.textContent = "✅ Key ऑटो-सेव हो गई है! अब बात करें।";
+        statusText.style.background = "#dcfce7";
+        statusText.style.color = "#166534";
+      }
+    });
 
     function addMsg(text, sender) {
       const div = document.createElement('div');
@@ -121,13 +140,12 @@
       const utter = new SpeechSynthesisUtterance(text.replace(/[\u{1F600}-\u{1F6FF}❤️💜]/gu, ''));
       utter.lang = 'hi-IN';
       utter.pitch = 1.15;
-      utter.rate = 1.0;
       window.speechSynthesis.speak(utter);
     }
 
-    function startVoice() {
+    document.getElementById('micBtn').addEventListener('click', () => {
       const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRec) { alert('आपके ब्राउज़र में वॉइस इनपुट सपोर्ट नहीं है।'); return; }
+      if (!SpeechRec) { alert('वॉइस इनपुट सपोर्ट नहीं है।'); return; }
       const rec = new SpeechRec();
       rec.lang = 'hi-IN';
       document.getElementById('micBtn').textContent = '🔴';
@@ -137,9 +155,50 @@
       };
       rec.onend = () => { document.getElementById('micBtn').textContent = '🎤'; };
       rec.start();
-    }
+    });
 
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const key = localStorage.getItem('jaan_groq_key') || apiInput.value.trim();
-      if (!key) { alert('पहले ऊपर अपनी Free Groq API Key डाल
+      const key = apiInput.value.trim() || localStorage.getItem('jaan_groq_key');
+      if (!key) {
+        statusText.textContent = "⚠️ पहले ऊपर अपनी Groq API Key डालें!";
+        return;
+      }
+      localStorage.setItem('jaan_groq_key', key);
+
+      const input = document.getElementById('msg');
+      const userText = input.value.trim();
+      if (!userText) return;
+
+      addMsg(userText, 'user');
+      input.value = '';
+      history.push({ role: "user", content: userText });
+
+      const loading = addMsg('Jaan सोच रही है...', 'jaan');
+
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + key
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: history
+          })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+
+        const reply = data.choices[0].message.content;
+        loading.textContent = reply;
+        history.push({ role: "assistant", content: reply });
+        speak(reply);
+      } catch (err) {
+        loading.textContent = '❌ Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
