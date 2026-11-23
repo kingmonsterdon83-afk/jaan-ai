@@ -7,8 +7,10 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
     body { background: #f8f5ff; display: flex; flex-direction: column; height: 100dvh; }
-    header { background: linear-gradient(135deg, #6366f1, #ec4899); color: #fff; padding: 14px; display: flex; align-items: center; gap: 10px; }
+    header { background: linear-gradient(135deg, #6366f1, #ec4899); color: #fff; padding: 14px; display: flex; align-items: center; justify-content: space-between; }
+    .head-left { display: flex; align-items: center; gap: 10px; }
     .avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .voice-btn { background: rgba(255,255,255,0.25); color: #fff; border: none; padding: 8px 12px; border-radius: 16px; font-size: 13px; font-weight: bold; }
     .api-bar { background: #fff; padding: 10px; display: flex; gap: 8px; border-bottom: 1px solid #e5e7eb; }
     .api-bar input { flex: 1; padding: 10px; border: 1.5px solid #c4b5fd; border-radius: 20px; font-size: 14px; min-width: 0; }
     .save-btn { background: #7c3aed; color: #fff; border: none; padding: 10px 16px; border-radius: 20px; font-weight: bold; }
@@ -25,8 +27,11 @@
 </head>
 <body>
   <header>
-    <div class="avatar">💜</div>
-    <div><h1 style="font-size:18px">Jaan AI</h1><p style="font-size:12px">तुम्हारी AI साथी • हमेशा बातचीत के लिए</p></div>
+    <div class="head-left">
+      <div class="avatar">💜</div>
+      <div><h1 style="font-size:18px">Jaan AI</h1><p style="font-size:12px">तुम्हारी AI साथी • हमेशा बातचीत के लिए</p></div>
+    </div>
+    <button type="button" class="voice-btn" onclick="speak('हाय, मैं जान हूँ। मेरी आवाज़ कैसी लग रही है?')">🔊 Test Voice</button>
   </header>
 
   <div class="api-bar">
@@ -49,7 +54,19 @@
     const apiInput = document.getElementById('apiKey');
     const chatBox = document.getElementById('chat');
     const statusText = document.getElementById('statusText');
-    let history = [{ role: "system", content: "Tum Jaan ho, ek pyari Indian female AI assistant. Hindi aur Hinglish mein chhote, warm aur caring jawab do." }];
+    let selectedVoice = null;
+    let history = [{ role: "system", content: "Tum Jaan ho, ek pyari Indian ladki (female AI assistant). Tum hamesha stree-ling (female gender, jaise 'main khush hoon', 'main kar rahi hoon') mein natural Hindi aur Hinglish mein chhote, pyare jawab deti ho. Kabhi JSON ya code mat likhna." }];
+
+    function loadFemaleVoice() {
+      const voices = window.speechSynthesis.getVoices();
+      selectedVoice =
+        voices.find(v => /hi-IN/i.test(v.lang) && /female|swara|heera|kalpana|lekha|google हिन्दी/i.test(v.name)) ||
+        voices.find(v => /hi-IN/i.test(v.lang) && !/male|hemant|madhur/i.test(v.name)) ||
+        voices.find(v => /en-IN/i.test(v.lang) && /female|neerja|veena|raveena/i.test(v.name)) ||
+        voices.find(v => /hi/i.test(v.lang));
+    }
+    window.speechSynthesis.onvoiceschanged = loadFemaleVoice;
+    loadFemaleVoice();
 
     const saved = localStorage.getItem('jaan_groq_key');
     if (saved) {
@@ -62,7 +79,7 @@
       const k = apiInput.value.trim();
       if (!k) { alert("पहले ऊपर gsk_... वाली Key पेस्ट करें!"); return; }
       localStorage.setItem('jaan_groq_key', k);
-      statusText.textContent = "✅ Key सेव हो गई है! अब नीचे 'Hii' भेजें।";
+      statusText.textContent = "✅ Key सेव हो गई है!";
       statusText.style.background = "#dcfce7";
     }
 
@@ -77,9 +94,14 @@
 
     function speak(text) {
       if (!('speechSynthesis' in window)) return;
+      loadFemaleVoice();
       window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text.replace(/[\u{1F600}-\u{1F6FF}❤️💜]/gu, ''));
-      u.lang = 'hi-IN'; u.pitch = 1.15;
+      const clean = text.replace(/[\u{1F600}-\u{1F6FF}❤️💜😊]/gu, '');
+      const u = new SpeechSynthesisUtterance(clean);
+      if (selectedVoice) u.voice = selectedVoice;
+      u.lang = 'hi-IN';
+      u.pitch = 1.18;
+      u.rate = 0.98;
       window.speechSynthesis.speak(u);
     }
 
