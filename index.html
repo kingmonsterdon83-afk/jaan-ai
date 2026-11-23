@@ -67,10 +67,10 @@
   </header>
 
   <div class="api-bar">
-    <input type="password" id="apiKey" placeholder="OpenAI API Key डालें (sk-...)" />
+    <input type="password" id="apiKey" placeholder="Free Groq API Key डालें (gsk_...)" />
     <button type="button" onclick="saveKey()">Save</button>
   </div>
-  <div class="note" id="statusText">API key आपके फ़ोन में ही सुरक्षित सेव रहेगी।</div>
+  <div class="note" id="statusText">Free API key console.groq.com से बनाकर यहाँ डालें।</div>
 
   <div id="chat">
     <div class="msg jaan">हाय ❤️ मैं Jaan हूँ। आज तुम क्या बात करना चाहते हो?</div>
@@ -90,21 +90,20 @@
       { role: "system", content: "Tum Jaan ho, ek pyari, samajhdar aur friendly Indian female AI assistant. Tum Hindi, Hinglish aur English mein natural, warm aur caring tarike se baat karti ho. Jawab chhote, clear aur dil se do." }
     ];
 
-    // Load saved key
-    const savedKey = localStorage.getItem('jaan_openai_key');
+    const savedKey = localStorage.getItem('jaan_groq_key');
     if (savedKey) {
       apiInput.value = savedKey;
-      statusText.textContent = "✅ API Key सेव है। बात शुरू करें!";
+      statusText.textContent = "✅ Free API Key सेव है। बात शुरू करें!";
     }
 
     function saveKey() {
       const k = apiInput.value.trim();
-      if (!k.startsWith('sk-')) {
-        alert('कृपया सही OpenAI API key डालें (जो sk- से शुरू होती है)');
+      if (!k.startsWith('gsk_')) {
+        alert('कृपया सही Groq API key डालें (जो gsk_ से शुरू होती है)');
         return;
       }
-      localStorage.setItem('jaan_openai_key', k);
-      statusText.textContent = "✅ API Key सेव हो गई है!";
+      localStorage.setItem('jaan_groq_key', k);
+      statusText.textContent = "✅ Free API Key सेव हो गई है!";
     }
 
     function addMsg(text, sender) {
@@ -142,42 +141,5 @@
 
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const key = localStorage.getItem('jaan_openai_key') || apiInput.value.trim();
-      if (!key) { alert('पहले ऊपर अपनी OpenAI API Key डालकर Save करें।'); return; }
-
-      const input = document.getElementById('msg');
-      const userText = input.value.trim();
-      if (!userText) return;
-
-      addMsg(userText, 'user');
-      input.value = '';
-      history.push({ role: "user", content: userText });
-
-      const loading = addMsg('Jaan सोच रही है...', 'jaan');
-
-      try {
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + key
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            messages: history
-          })
-        });
-        const data = await res.json();
-        if (data.error) throw new Error(data.error.message);
-
-        const reply = data.choices[0].message.content;
-        loading.textContent = reply;
-        history.push({ role: "assistant", content: reply });
-        speak(reply);
-      } catch (err) {
-        loading.textContent = '❌ Error: ' + err.message;
-      }
-    });
-  </script>
-</body>
-</html>
+      const key = localStorage.getItem('jaan_groq_key') || apiInput.value.trim();
+      if (!key) { alert('पहले ऊपर अपनी Free Groq API Key डाल
