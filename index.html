@@ -3,227 +3,791 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jaan AI • Live Creative Edition</title>
+  <title>Jaan AI • iPhone Glass & Live BG</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    
-    /* 1. ANIMATED LIVE BACKGROUND */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; }
+
     body {
-      background: radial-gradient(circle at top, #14010a 0%, #030002 80%, #000000 100%);
-      overflow: hidden;
+      background: #07020a;
+      color: #fff;
       display: flex;
       flex-direction: column;
       height: 100dvh;
+      overflow: hidden;
       position: relative;
     }
-    
-    /* Live backdrop wave/stars animation overlay */
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: 
-        radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 40px 70px, #fbcfe8, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 50px 160px, #f472b6, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 80px 120px, #fff, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 110px 220px, #f43f5e, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 140px 180px, #fff, rgba(0,0,0,0));
-      background-size: 250px 250px;
-      opacity: 0.45;
-      animation: liveBackgroundMove 90s linear infinite;
-      z-index: 1;
-      pointer-events: none;
-    }
 
-    @keyframes liveBackgroundMove {
-      from { background-position: 0 0; }
-      to { background-position: 1000px 1000px; }
-    }
-
-    /* Shimmering colored neon particles */
-    .glowing-bg {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
+    #liveCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       z-index: 0;
-      overflow: hidden;
       pointer-events: none;
     }
 
-    .particle {
-      position: absolute;
+    .aurora-layer {
+      position: fixed;
+      inset: -25%;
+      width: 150%;
+      height: 150%;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(244, 63, 94, 0.28), transparent 42%),
+        radial-gradient(circle at 80% 30%, rgba(168, 85, 247, 0.28), transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.22), transparent 50%);
+      filter: blur(28px);
+      animation: auroraDrift 14s ease-in-out infinite alternate;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes auroraDrift {
+      0% { transform: translate3d(0%, 0%, 0) scale(1) rotate(0deg); }
+      50% { transform: translate3d(-3%, 2%, 0) scale(1.06) rotate(4deg); }
+      100% { transform: translate3d(3%, -3%, 0) scale(1.03) rotate(-3deg); }
+    }
+
+    .iphone-top {
+      position: relative;
+      z-index: 10;
+      padding: 10px 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(15, 10, 22, 0.55);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .island-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .dynamic-island {
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 28px;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .island-dot {
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(244,63,94,0.7) 0%, rgba(225,29,72,0) 70%);
-      animation: pulseAndFloat 8s infinite ease-in-out;
-      opacity: 0.5;
+      background: #fb7185;
+      box-shadow: 0 0 10px #fb7185;
+      flex-shrink: 0;
     }
 
-    @keyframes pulseAndFloat {
-      0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-      50% { opacity: 0.6; }
-      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    .island-dot.active {
+      background: #34d399;
+      box-shadow: 0 0 12px #34d399;
+      animation: blinkDot 1s infinite;
     }
 
-    header {
-      background: linear-gradient(135deg, rgba(219, 39, 119, 0.75), rgba(124, 58, 237, 0.75));
-      backdrop-filter: blur(15px);
-      padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid rgba(244, 63, 94, 0.35);
-      z-index: 10;
-      box-shadow: 0 4px 20px rgba(225, 29, 72, 0.15);
+    @keyframes blinkDot {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.35); }
     }
-    
-    .head-left { display: flex; align-items: center; gap: 10px; }
-    .avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: linear-gradient(135deg, #fb7185, #e11d48);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 800; color: #fff;
+
+    .island-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    
-    .top-btns { display: flex; gap: 6px; }
-    .mini-btn {
-      background: rgba(255, 255, 255, 0.15); color: #ffe4e6;
-      border: 1px solid rgba(251, 113, 133, 0.45);
-      padding: 7px 10px; border-radius: 16px; font-size: 11px; font-weight: 700; cursor: pointer;
+
+    .island-sub {
+      font-size: 10px;
+      color: #fda4af;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    
-    .live-on { background: #e11d48 !important; color: #fff !important; box-shadow: 0 0 14px #f43f5e; }
-    
+
+    .ios-pill-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 11px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      white-space: nowrap;
+    }
+
+    .ios-pill-btn.live-on {
+      background: linear-gradient(135deg, #ff2e63, #c026d3);
+      border-color: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 0 16px rgba(255, 46, 99, 0.65);
+    }
+
     .api-bar {
-      background: rgba(24, 5, 16, 0.85); backdrop-filter: blur(8px);
-      padding: 8px 10px; display: flex; gap: 8px;
-      border-bottom: 1px solid rgba(244, 63, 94, 0.25);
+      position: relative;
       z-index: 10;
+      background: rgba(18, 12, 26, 0.65);
+      backdrop-filter: blur(18px);
+      padding: 7px 12px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
-    
+
     .api-bar input {
-      flex: 1; padding: 8px 12px; background: rgba(255, 255, 255, 0.08); color: #fff;
-      border: 1px solid rgba(244, 63, 94, 0.5); border-radius: 20px; font-size: 13px; min-width: 0; outline: none;
+      flex: 1;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.09);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 20px;
+      font-size: 13px;
+      min-width: 0;
+      outline: none;
     }
-    
+
     .save-btn {
-      background: linear-gradient(135deg, #e11d48, #9333ea); color: #fff;
-      border: none; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 13px;
+      background: linear-gradient(135deg, #ff2e63, #9333ea);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
     }
-    
-    .live-banner {
-      font-size: 11px; color: #fda4af; padding: 6px 14px;
-      background: rgba(136, 19, 55, 0.35); display: flex; justify-content: space-between;
+
+    .status-strip {
+      position: relative;
       z-index: 10;
-    }
-    
-    #chat { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 11px; z-index: 5; }
-    
-    .msg { max-width: 82%; padding: 11px 15px; border-radius: 18px; font-size: 15px; line-height: 1.45; word-wrap: break-word; }
-    
-    .jaan { 
-      background: rgba(45, 10, 30, 0.75); 
+      font-size: 11px;
+      color: #fecdd3;
+      padding: 5px 14px;
+      background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(10px);
-      color: #ffe4e6; align-self: flex-start; 
-      border: 1px solid rgba(244, 63, 94, 0.35); 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
-    
-    .user { background: linear-gradient(135deg, rgba(225,29,72,0.85), rgba(126,34,206,0.85)); color: #fff; align-self: flex-end; }
-    
-    .msg img { max-width: 100%; border-radius: 12px; margin-bottom: 6px; display: block; }
-    .action-tag { font-size: 11px; color: #fb7185; margin-top: 5px; font-weight: 700; }
-    
-    .song-card, .image-card {
-      margin-top: 8px; padding: 10px; background: rgba(225, 29, 72, 0.25);
-      border: 1px solid #fb7185; border-radius: 12px; display: flex; flex-direction: column; gap: 6px;
+
+    #chat {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
-    
-    .song-btn, .dl-btn {
-      background: #e11d48; color: #fff; text-align: center; padding: 8px;
-      border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; cursor: pointer;
+
+    .msg {
+      max-width: 82%;
+      padding: 12px 16px;
+      border-radius: 22px;
+      font-size: 15px;
+      line-height: 1.45;
+      word-wrap: break-word;
     }
-    .dl-btn { background: #7e22ce; }
-    
-    .bottom-bar {
-      background: rgba(18, 4, 12, 0.95); padding: 9px 10px; display: flex; gap: 7px;
-      border-top: 1px solid rgba(244, 63, 94, 0.35); align-items: center;
+
+    .jaan {
+      background: rgba(34, 18, 46, 0.62);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      color: #fff1f2;
+      align-self: flex-start;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-bottom-left-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .user {
+      background: linear-gradient(135deg, rgba(255, 46, 99, 0.88), rgba(147, 51, 234, 0.88));
+      backdrop-filter: blur(14px);
+      color: #fff;
+      align-self: flex-end;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-bottom-right-radius: 6px;
+      box-shadow: 0 8px 24px rgba(255, 46, 99, 0.28);
+    }
+
+    .msg img {
+      max-width: 100%;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .edit-card {
+      margin-top: 8px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ios-action-btn {
+      background: linear-gradient(135deg, #ff2e63, #9333ea);
+      color: #fff;
+      text-align: center;
+      padding: 9px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .action-tag {
+      font-size: 11px;
+      color: #fda4af;
+      margin-top: 6px;
+      font-weight: 700;
+    }
+
+    #photoPreviewBar {
+      display: none;
+      position: relative;
       z-index: 10;
+      background: rgba(20, 12, 30, 0.82);
+      backdrop-filter: blur(18px);
+      padding: 8px 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
     }
-    
+
+    #photoPreviewBar img {
+      height: 50px;
+      width: 50px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .iphone-dock {
+      position: relative;
+      z-index: 10;
+      background: rgba(16, 10, 24, 0.68);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      padding: 9px 10px 12px;
+      display: flex;
+      gap: 7px;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      align-items: center;
+    }
+
     #msg {
-      flex: 1; padding: 11px 15px; background: rgba(255, 255, 255, 0.09); color: #fff;
-      border: 1px solid rgba(244, 63, 94, 0.45); border-radius: 24px; font-size: 15px; min-width: 0; outline: none;
+      flex: 1;
+      padding: 11px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      font-size: 15px;
+      min-width: 0;
+      outline: none;
     }
-    
-    .icon-btn {
-      background: rgba(244, 63, 94, 0.2); color: #fb7185;
-      border: 1px solid rgba(244, 63, 94, 0.4); width: 42px; height: 42px;
-      border-radius: 50%; font-size: 14px; flex-shrink: 0; cursor: pointer;
+
+    #msg::placeholder {
+      color: rgba(255, 228, 230, 0.65);
     }
-    
-    .send-btn {
-      background: linear-gradient(135deg, #f43f5e, #9333ea); color: #fff;
-      border: none; padding: 11px 18px; border-radius: 24px; font-weight: 700; flex-shrink: 0; cursor: pointer;
+
+    .ios-mic-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .ios-mic-btn.recording {
+      background: #ff2e63;
+      box-shadow: 0 0 18px #ff2e63;
+      transform: scale(1.06);
+    }
+
+    .ios-send-btn {
+      background: linear-gradient(135deg, #ff2e63, #9333ea);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 11px 18px;
+      border-radius: 24px;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+  <div class="aurora-layer"></div>
+  <canvas id="liveCanvas"></canvas>
 
-  <!-- Particle container for smooth background motion -->
-  <div class="glowing-bg" id="particleContainer"></div>
-
-  <header>
-    <div class="head-left">
-      <div class="avatar">J</div>
-      <div>
-        <h1 style="font-size:17px;">Jaan AI</h1>
-        <p style="font-size:11px;color:#fecdd3;" id="listenStatus">Safe Creativity • 24/7 Ready</p>
+  <div class="iphone-top">
+    <div class="island-row">
+      <div class="dynamic-island">
+        <div class="island-dot" id="islandDot"></div>
+        <div style="min-width:0;flex:1;">
+          <div class="island-title">Jaan AI • Couple Mode</div>
+          <div class="island-sub" id="listenStatus">Live BG Chal Raha Hai • Bolo Hey Jaan</div>
+        </div>
       </div>
+      <button type="button" class="ios-pill-btn" id="wakeToggle" onclick="toggleAlwaysListen()">Live: OFF</button>
+      <button type="button" class="ios-pill-btn" onclick="speak('हाय जान, मैं तुम्हारी गर्लफ्रेंड बोल रही हूँ, बताओ आज क्या प्लान है?')">Voice</button>
     </div>
-    <div class="top-btns">
-      <button type="button" class="mini-btn" id="wakeToggle" onclick="toggleAlwaysListen()">Live: OFF</button>
-      <button type="button" class="mini-btn" onclick="speak('हाय जान, देखो मैंने बैकग्राउंड को बिल्कुल लाइव बना दिया है। सब कितना सुंदर लग रहा है ना? बोलो क्या काम है?')">Test</button>
-    </div>
-  </header>
+  </div>
 
   <div class="api-bar">
     <input type="text" id="apiKey" placeholder="gsk_... Key पेस्ट करें" />
     <button type="button" class="save-btn" onclick="saveKey()">Save</button>
   </div>
-  <div class="live-banner">
-    <span id="liveHeardText">Live bg active! Bolo: Hey Jaan, ek romantic wallpaper banao</span>
-    <span onclick="clearChat()" style="color:#fb7185;font-weight:bold;cursor:pointer">Clear</span>
+
+  <div class="status-strip">
+    <span id="liveHeardText">Photo bhejo aur edit karwao ya Hey Jaan bolo</span>
+    <span onclick="clearChat()" style="color:#fda4af;font-weight:bold;cursor:pointer">Clear</span>
   </div>
 
   <div id="chat"></div>
 
-  <div class="bottom-bar">
+  <div id="photoPreviewBar">
+    <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+      <img id="previewThumb" src="" alt="Preview" />
+      <span id="previewLabel" style="font-size:12px;color:#ffe4e6;">Photo ready hai, likho kaise edit karna hai</span>
+    </div>
+    <button type="button" onclick="clearPhotoSelection()" style="background:none;border:none;color:#fda4af;font-weight:bold;font-size:14px;cursor:pointer;">X</button>
+  </div>
+
+  <div class="iphone-dock">
     <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoSelect(event)" />
-    <button type="button" class="icon-btn" onclick="document.getElementById('photoInput').click()">Cam</button>
-    <button type="button" class="icon-btn" id="micBtn" onclick="startSingleMic()">Mic</button>
-    <input type="text" id="msg" placeholder="Bolo Hey Jaan ya photo banao..." onkeydown="if(event.key==='Enter') sendMsg()" />
-    <button type="button" class="send-btn" onclick="sendMsg()">Send</button>
+    <button type="button" class="ios-mic-btn" onclick="document.getElementById('photoInput').click()">Photo</button>
+    <button type="button" class="ios-mic-btn" id="micBtn" onclick="startSingleMic()">Mic</button>
+    <input type="text" id="msg" placeholder="Jaan se baat karo ya photo edit karwao..." onkeydown="if(event.key==='Enter') sendMsg()" />
+    <button type="button" class="ios-send-btn" onclick="sendMsg()">Send</button>
   </div>
 
   <script>
-    // Create random moving background particles for rich, animated visual
-    const container = document.getElementById('particleContainer');
-    function createBgParticles() {
-      for (let i = 0; i < 15; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const size = Math.random() * 80 + 30;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.left = Math.random() * 100 + '%';
-        p.style.animationDelay = (Math.random() * 8) + 's';
-        p.style.animationDuration = (Math.random() * 5 + 6) + 's';
-        container.appendChild(p);
-      }
+    const canvas = document.getElementById('liveCanvas');
+    const ctx = canvas.getContext('2d');
+    let orbs = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
-    createBgParticles();
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    for (let i = 0; i < 28; i++) {
+      orbs.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 3.5 + 1.2,
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: -(Math.random() * 0.9 + 0.3),
+        hue: Math.random() > 0.5 ? 340 : 280,
+        alpha: Math.random() * 0.6 + 0.25
+      });
+    }
+
+    function animateLiveBg() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const o of orbs) {
+        o.x += o.vx;
+        o.y += o.vy;
+        if (o.y < -10) {
+          o.y = canvas.height + 10;
+          o.x = Math.random() * canvas.width;
+        }
+        if (o.x < -10) o.x = canvas.width + 10;
+        if (o.x > canvas.width + 10) o.x = -10;
+
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${o.hue}, 90%, 68%, ${o.alpha})`;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = `hsla(${o.hue}, 90%, 65%, 0.8)`;
+        ctx.fill();
+      }
+      requestAnimationFrame(animateLiveBg);
+    }
+    animateLiveBg();
 
     const apiInput = document.getElementById('apiKey');
     const chatBox = document.getElementById('chat');
     const liveHeardText = document.getElementById('liveHeardText');
     const listenStatus = document.getElementById('listenStatus');
     const wakeToggle = document.getElementById('wakeToggle');
+    const islandDot = document.getElementById('islandDot');
+    const micBtn = document.getElementById('micBtn');
 
     let userMemory = JSON.parse(localStorage.getItem('jaan_memory') || '{"name":"Jaan","facts":[]}');
-    let chatHistory = JSON.parse(localStorage.
+    let chatHistory = JSON.parse(localStorage.getItem('jaan_chat') || '[]');
+    let alwaysListen = false;
+    let recognition = null;
+    let isSpeaking = false;
+    let selectedImageBase64 = null;
+
+    const savedKey = localStorage.getItem('jaan_groq_key');
+    if (savedKey) apiInput.value = savedKey;
+
+    if (chatHistory.length === 0) {
+      addMsg("हाय जान, मैं तुम्हारी गर्लफ्रेंड बोल रही हूँ। देखो हमारा लाइव बैकग्राउंड कैसे चल रहा है, तुम अपनी फोटो भेजकर उसे एडिट भी करवा सकते हो और दिल खोलकर बातें भी कर सकते हो।", 'jaan', false);
+    } else {
+      chatHistory.forEach(m => addMsg(m.content, m.role === 'user' ? 'user' : 'jaan', false, m.actionNote || "", m.imgSrc || null, m.songQuery || null, m.editPrompt || null));
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('ask')) {
+      setTimeout(() => {
+        document.getElementById('msg').value = urlParams.get('ask');
+        sendMsg();
+      }, 450);
+    }
+
+    function saveKey() {
+      localStorage.setItem('jaan_groq_key', apiInput.value.trim());
+      liveHeardText.textContent = "Key save ho gayi hai jaan!";
+    }
+
+    function clearChat() {
+      localStorage.removeItem('jaan_chat');
+      chatHistory = [];
+      chatBox.innerHTML = '';
+      addMsg("पुरानी बातें हटा दी हैं जान, अब बताओ क्या बात करनी है या कौन सी फोटो एडिट करनी है?", 'jaan', false);
+    }
+
+    function handlePhotoSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvasTmp = document.createElement('canvas');
+          const scale = Math.min(1, 800 / img.width);
+          canvasTmp.width = img.width * scale;
+          canvasTmp.height = img.height * scale;
+          canvasTmp.getContext('2d').drawImage(img, 0, 0, canvasTmp.width, canvasTmp.height);
+          selectedImageBase64 = canvasTmp.toDataURL('image/jpeg', 0.8);
+          document.getElementById('previewThumb').src = selectedImageBase64;
+          document.getElementById('photoPreviewBar').style.display = 'flex';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearPhotoSelection() {
+      selectedImageBase64 = null;
+      document.getElementById('photoInput').value = '';
+      document.getElementById('photoPreviewBar').style.display = 'none';
+    }
+
+    function cleanText(raw) {
+      return raw
+        .replace(/\.{2,}/g, ', ')
+        .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')
+        .replace(/[\*\#\_\~\`\>\|\\\/\[\]\{\}\(\)]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function addMsg(text, sender, save = true, actionNote = "", imgSrc = null, songQuery = null, editPrompt = null) {
+      const div = document.createElement('div');
+      div.className = 'msg ' + sender;
+      if (imgSrc) {
+        const im = document.createElement('img');
+        im.src = imgSrc;
+        div.appendChild(im);
+      }
+      const span = document.createElement('div');
+      span.textContent = text;
+      div.appendChild(span);
+
+      if (songQuery) {
+        const card = document.createElement('div');
+        card.className = 'edit-card';
+        card.innerHTML = `
+          <div style="font-size:12px;color:#fecdd3;">Song: ${songQuery}</div>
+          <a class="ios-action-btn" href="https://m.youtube.com/results?search_query=${encodeURIComponent(songQuery + ' song')}" target="_blank">YouTube par Chalayein</a>
+        `;
+        div.appendChild(card);
+      }
+
+      if (editPrompt) {
+        const card = document.createElement('div');
+        card.className = 'edit-card';
+        const genUrl = "https://pollinations.ai/p/" + encodeURIComponent(editPrompt) + "?width=640&height=640&seed=" + Math.floor(Math.random() * 10000);
+        card.innerHTML = `
+          <img src="${genUrl}" alt="${editPrompt}" style="width:100%;border-radius:10px;margin-bottom:4px;" />
+          <a class="ios-action-btn" href="${genUrl}" target="_blank" download="jaan_edited_photo.jpg">Edited Photo Save Karein</a>
+        `;
+        div.appendChild(card);
+      }
+
+      if (actionNote) {
+        const tag = document.createElement('div');
+        tag.className = 'action-tag';
+        tag.textContent = "Action: " + actionNote;
+        div.appendChild(tag);
+      }
+
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      if (save && text) {
+        chatHistory.push({
+          role: sender === 'user' ? 'user' : 'assistant',
+          content: text,
+          actionNote: actionNote,
+          imgSrc: imgSrc,
+          songQuery: songQuery,
+          editPrompt: editPrompt
+        });
+        if (chatHistory.length > 24) chatHistory = chatHistory.slice(-24);
+        localStorage.setItem('jaan_chat', JSON.stringify(chatHistory));
+      }
+      return div;
+    }
+
+    function speak(text) {
+      const clean = cleanText(text);
+      if (!clean || !('speechSynthesis' in window)) return;
+
+      isSpeaking = true;
+      if (recognition) { try { recognition.abort(); } catch(e){} }
+      window.speechSynthesis.cancel();
+
+      const u = new SpeechSynthesisUtterance(clean);
+      const voices = window.speechSynthesis.getVoices();
+      const fem = voices.find(v => /hi-IN/i.test(v.lang) && /google|female|swara|heera|kalpana|lekha/i.test(v.name) && !/male|hemant|madhur/i.test(v.name))
+               || voices.find(v => /hi-IN/i.test(v.lang) && !/male|hemant|madhur/i.test(v.name));
+
+      if (fem) u.voice = fem;
+      u.lang = 'hi-IN';
+      u.pitch = 1.06;
+      u.rate = 0.85;
+      u.volume = 1.0;
+
+      u.onend = () => { isSpeaking = false; if (alwaysListen) setTimeout(startContinuousLiveMic, 250); };
+      u.onerror = () => { isSpeaking = false; if (alwaysListen) setTimeout(startContinuousLiveMic, 250); };
+      window.speechSynthesis.speak(u);
+    }
+
+    function toggleAlwaysListen() {
+      alwaysListen = !alwaysListen;
+      if (alwaysListen) {
+        wakeToggle.textContent = "Live: ON";
+        wakeToggle.classList.add('live-on');
+        islandDot.classList.add('active');
+        listenStatus.textContent = "Sun Rahi Hoon... Bolo 'Hey Jaan'";
+        startContinuousLiveMic();
+      } else {
+        wakeToggle.textContent = "Live: OFF";
+        wakeToggle.classList.remove('live-on');
+        islandDot.classList.remove('active');
+        listenStatus.textContent = "Live BG Chal Raha Hai • Bolo Hey Jaan";
+        if (recognition) { try { recognition.abort(); } catch(e){} }
+      }
+    }
+
+    function startContinuousLiveMic() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR || !alwaysListen || isSpeaking) return;
+
+      if (recognition) { try { recognition.abort(); } catch(e){} }
+      recognition = new SR();
+      recognition.lang = 'hi-IN';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onresult = (event) => {
+        if (isSpeaking) return;
+        const res = event.results[event.resultIndex];
+        const transcript = res[0].transcript.trim();
+        liveHeardText.textContent = "Sun rahi hoon: " + transcript;
+
+        if (res.isFinal) {
+          const low = transcript.toLowerCase();
+          if (/hey jaan|he jaan|hi jaan|jaan|जान|हे जान|हाय जान/.test(low)) {
+            const cmd = transcript.replace(/hey jaan|he jaan|hi jaan|jaan|जान|हे जान|हाय जान/gi, '').trim();
+            if (!cmd) {
+              const greet = "हाँ जान, बोलो, मैं सुन रही हूँ।";
+              addMsg(greet, 'jaan', false);
+              speak(greet);
+            } else {
+              document.getElementById('msg').value = cmd;
+              sendMsg();
+            }
+          }
+        }
+      };
+
+      recognition.onend = () => {
+        if (alwaysListen && !isSpeaking) setTimeout(startContinuousLiveMic, 200);
+      };
+      try { recognition.start(); } catch(e) {}
+    }
+
+    function startSingleMic() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return;
+      const r = new SR();
+      r.lang = 'hi-IN';
+      micBtn.classList.add('recording');
+      r.onresult = (e) => {
+        document.getElementById('msg').value = e.results[0][0].transcript;
+        sendMsg();
+      };
+      r.onend = () => { micBtn.classList.remove('recording'); };
+      r.start();
+    }
+
+    function runAlexaBrain(text) {
+      const low = text.toLowerCase();
+
+      if (/gaana|song|music|bajao|chalao|sunao|youtube|play/.test(low)) {
+        const songName = text.replace(/gaana|song|music|bajao|chalao|sunao|youtube|par|play|ek|koi|accha|sa|ka|ki/gi, '').trim() || "romantic hindi song";
+        const ytUrl = "https://m.youtube.com/results?search_query=" + encodeURIComponent(songName + " song");
+        window.open(ytUrl, "_blank");
+        return { reply: "ठीक है जान, मैं तुम्हारे लिए " + songName + " चला रही हूँ।", action: "Song: " + songName, song: songName };
+      }
+
+      if (low.includes('whatsapp')) {
+        window.location.href = "whatsapp://send?text=";
+        return { reply: "WhatsApp खोल रही हूँ जान।", action: "Opened WhatsApp" };
+      }
+
+      if (low.includes('call') || low.includes('phone lagao')) {
+        const num = text.replace(/[^0-9+]/g, '');
+        window.location.href = "tel:" + num;
+        return { reply: "कॉल लगा रही हूँ जान।", action: "Calling " + num };
+      }
+
+      if (low.includes('google') || low.includes('search')) {
+        const q = text.replace(/google|par|search|karo|batao/gi, '').trim();
+        window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank");
+        return { reply: "Google पर " + q + " ढूँढ रही हूँ जान।", action: "Google: " + q };
+      }
+
+      return null;
+    }
+
+    async function findModel(key, needVision = false) {
+      const res = await fetch('https://api.groq.com/openai/v1/models', {
+        headers: { 'Authorization': 'Bearer ' + key }
+      });
+      const data = await res.json();
+      const ids = (data.data || []).map(m => m.id);
+      if (needVision) return ids.find(id => /vision|llama-4|scout|maverick/i.test(id)) || 'meta-llama/llama-4-scout-17b-16e-instruct';
+      const valid = ids.filter(id => !/whisper|guard|tts|embed|orpheus|playai|distil|vision/i.test(id));
+      return valid.find(id => /llama|qwen|gemma|mixtral|gpt/i.test(id)) || valid[0];
+    }
+
+    async function sendMsg() {
+      const input = document.getElementById('msg');
+      const userText = input.value.trim();
+      const imgData = selectedImageBase64;
+      clearPhotoSelection();
+
+      if (!userText && !imgData) return;
+
+      addMsg(userText || "Photo bheji hai", 'user', true, "", imgData);
+      input.value = '';
+
+      if (!imgData) {
+        const alexaRes = runAlexaBrain(userText);
+        if (alexaRes) {
+          addMsg(alexaRes.reply, 'jaan', true, alexaRes.action, null, alexaRes.song || null, null);
+          speak(alexaRes.reply);
+          return;
+        }
+      }
+
+      const key = apiInput.value.trim() || localStorage.getItem('jaan_groq_key');
+      if (!key) { alert("पहले ऊपर अपनी Groq API Key डालकर Save करें!"); return; }
+      localStorage.setItem('jaan_groq_key', key);
+
+      const loading = addMsg(imgData ? 'Jaan photo dekh kar edit kar rahi hai...' : 'Jaan soch rahi hai...', 'jaan', false);
+
+      try {
+        const modelId = await findModel(key, !!imgData);
+        let messages = [];
+
+        if (imgData) {
+          messages = [{
+            role: "user",
+            content: [
+              { type: "text", text: `Tum Jaan ho, user ki pyari aur romantic girlfriend/couple partner. User ne ye photo bheji hai aur kaha: "${userText || 'Isko achha edit kar do'}". Pehle photo par ek pyara girlfriend/couple reaction do, aur phir line ke end mein is format mein ek short English image prompt likho: EDIT_PROMPT: <describe edited/stylized version of this scene>. STRICT RULE: Koi emoji ya '...' mat likhna.` },
+              { type: "image_url", image_url: { url: imgData } }
+            ]
+          }];
+        } else {
+          const sys = {
+            role: "system",
+            content: "Tum Jaan ho, user ki behad pyari, romantic aur caring girlfriend/couple partner. Tum couple ki tarah pyaar, apnapan aur romance ke saath saaf, chhote aur dil se jawab deti ho. STRICT RULE: Apne jawab mein KABHI BHI koi emoji ya '...' (three dots) mat likhna, sirf saaf shabd aur comma lagana."
+          };
+          messages = [sys, ...chatHistory.slice(-10)];
+        }
+
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+          body: JSON.stringify({ model: modelId, messages: messages })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+
+        let rawReply = data.choices[0].message.content;
+        let extractedPrompt = null;
+
+        if (imgData && /EDIT_PROMPT:/i.test(rawReply)) {
+          const parts = rawReply.split(/EDIT_PROMPT:/i);
+          rawReply = parts[0];
+          extractedPrompt = parts[1].replace(/[\r\n]+/g, ' ').trim();
+        } else if (imgData) {
+          extractedPrompt = (userText || "romantic glowing artistic photo edit") + ", cinematic lighting, high detail";
+        }
+
+        const cleanReply = cleanText(rawReply) || "देखो जान, मैंने तुम्हारी फोटो को प्यार से एडिट कर दिया है।";
+        loading.remove();
+        addMsg(cleanReply, 'jaan', true, extractedPrompt ? "Photo Edited" : "", null, null, extractedPrompt);
+        speak(cleanReply);
+      } catch (err) {
+        loading.remove();
+        addMsg('Error: ' + err.message, 'jaan', false);
+      }
+    }
+  </script>
+</body>
+</html>
