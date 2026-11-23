@@ -93,6 +93,19 @@
       r.start();
     }
 
+    async function findWorkingModel(key) {
+      const res = await fetch('https://api.groq.com/openai/v1/models', {
+        headers: { 'Authorization': 'Bearer ' + key }
+      });
+      const data = await res.json();
+      if (!data.data || data.data.length === 0) throw new Error("No models enabled in Groq project. Enable models in console.groq.com/settings/limits");
+      const valid = data.data
+        .map(m => m.id)
+        .filter(id => !id.includes('whisper') && !id.includes('guard') && !id.includes('tts') && !id.includes('embed'));
+      if (valid.length === 0) throw new Error("Available models: " + data.data.map(m => m.id).join(', '));
+      return valid[0];
+    }
+
     async function sendMsg() {
       const key = apiInput.value.trim() || localStorage.getItem('jaan_groq_key');
       if (!key) { alert("पहले ऊपर अपनी Groq API Key डालकर Save करें!"); return; }
@@ -108,10 +121,11 @@
       const loading = addMsg('Jaan सोच रही है...', 'jaan');
 
       try {
+        const modelId = await findWorkingModel(key);
         const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-          body: JSON.stringify({ model: 'llama-3.1-8b-instant', messages: history })
+          body: JSON.stringify({ model: modelId, messages: history })
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error.message);
