@@ -373,7 +373,7 @@
   </div>
 
   <div class="status-strip">
-    <span id="liveHeardText">Photo bhejo aur edit karwao ya Hey Jaan bolo</span>
+    <span id="liveHeardText">Photo bhejo aur natural look banao ya Hey Jaan bolo</span>
     <span onclick="clearChat()" style="color:#fda4af;font-weight:bold;cursor:pointer">Clear</span>
   </div>
 
@@ -461,7 +461,7 @@
     if (savedKey) apiInput.value = savedKey;
 
     if (chatHistory.length === 0) {
-      addMsg("हाय जान, मैं तुम्हारी गर्लफ्रेंड बोल रही हूँ। देखो हमारा लाइव बैकग्राउंड कैसे चल रहा है, तुम अपनी फोटो भेजकर उसे एडिट भी करवा सकते हो और दिल खोलकर बातें भी कर सकते हो।", 'jaan', false);
+      addMsg("हाय जान, मैं तुम्हारी गर्लफ्रेंड बोल रही हूँ। देखो हमारा लाइव बैकग्राउंड कैसे चल रहा है, तुम अपनी फोटो भेजकर उसे नेचुरल और सुंदर लुक में एडिट भी करवा सकते हो और दिल खोलकर बातें भी कर सकते हो।", 'jaan', false);
     } else {
       chatHistory.forEach(m => addMsg(m.content, m.role === 'user' ? 'user' : 'jaan', false, m.actionNote || "", m.imgSrc || null, m.songQuery || null, m.editPrompt || null));
     }
@@ -520,6 +520,20 @@
         .replace(/[\*\#\_\~\`\>\|\\\/\[\]\{\}\(\)]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
+    }
+
+    // Sirf valid role aur string content wali messages list banata hai taaki API error na aaye
+    function buildCleanApiMessages(systemPrompt, currentUserContent = null) {
+      const validPast = chatHistory
+        .filter(m => (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content.trim().length > 0)
+        .slice(-10)
+        .map(m => ({ role: m.role, content: m.content.trim() }));
+
+      const list = [{ role: 'system', content: systemPrompt }, ...validPast];
+      if (currentUserContent) {
+        list.push({ role: 'user', content: currentUserContent });
+      }
+      return list;
     }
 
     function addMsg(text, sender, save = true, actionNote = "", imgSrc = null, songQuery = null, editPrompt = null) {
@@ -722,7 +736,8 @@
 
       if (!userText && !imgData) return;
 
-      addMsg(userText || "Photo bheji hai", 'user', true, "", imgData);
+      const displayUserText = userText || "Photo bheji hai";
+      addMsg(displayUserText, 'user', true, "", imgData);
       input.value = '';
 
       if (!imgData) {
@@ -748,16 +763,16 @@
           messages = [{
             role: "user",
             content: [
-              { type: "text", text: `Tum Jaan ho, user ki pyari aur romantic girlfriend/couple partner. User ne ye photo bheji hai aur kaha: "${userText || 'Isko achha edit kar do'}". Pehle photo par ek pyara girlfriend/couple reaction do, aur phir line ke end mein is format mein ek short English image prompt likho: EDIT_PROMPT: <describe edited/stylized version of this scene>. STRICT RULE: Koi emoji ya '...' mat likhna.` },
+              {
+                type: "text",
+                text: `Tum Jaan ho, user ki pyari aur romantic girlfriend/couple partner. User ne ye photo bheji hai aur kaha: "${userText || 'Isko natural aur achha edit kar do'}". Pehle photo par ek pyara girlfriend/couple reaction do, aur phir line ke end mein is format mein ek safe, natural aur artistic English image prompt likho: EDIT_PROMPT: <natural soft lighting portrait or scenic edit, safe and tasteful>. STRICT RULE: Koi emoji ya '...' mat likhna.`
+              },
               { type: "image_url", image_url: { url: imgData } }
             ]
           }];
         } else {
-          const sys = {
-            role: "system",
-            content: "Tum Jaan ho, user ki behad pyari, romantic aur caring girlfriend/couple partner. Tum couple ki tarah pyaar, apnapan aur romance ke saath saaf, chhote aur dil se jawab deti ho. STRICT RULE: Apne jawab mein KABHI BHI koi emoji ya '...' (three dots) mat likhna, sirf saaf shabd aur comma lagana."
-          };
-          messages = [sys, ...chatHistory.slice(-10)];
+          const sys = "Tum Jaan ho, user ki behad pyari, romantic aur caring girlfriend/couple partner. Tum couple ki tarah pyaar, apnapan aur romance ke saath saaf, chhote aur dil se jawab deti ho. STRICT RULE: Apne jawab mein KABHI BHI koi emoji ya '...' (three dots) mat likhna, sirf saaf shabd aur comma lagana.";
+          messages = buildCleanApiMessages(sys, userText);
         }
 
         const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -776,10 +791,10 @@
           rawReply = parts[0];
           extractedPrompt = parts[1].replace(/[\r\n]+/g, ' ').trim();
         } else if (imgData) {
-          extractedPrompt = (userText || "romantic glowing artistic photo edit") + ", cinematic lighting, high detail";
+          extractedPrompt = "natural soft warm lighting portrait, clean aesthetic edit, high clarity";
         }
 
-        const cleanReply = cleanText(rawReply) || "देखो जान, मैंने तुम्हारी फोटो को प्यार से एडिट कर दिया है।";
+        const cleanReply = cleanText(rawReply) || "देखो जान, मैंने तुम्हारी फोटो को नेचुरल और प्यारे अंदाज़ में एडिट कर दिया है।";
         loading.remove();
         addMsg(cleanReply, 'jaan', true, extractedPrompt ? "Photo Edited" : "", null, null, extractedPrompt);
         speak(cleanReply);
