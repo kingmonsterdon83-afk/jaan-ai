@@ -3,98 +3,160 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jaan AI • Live Hot Dark Edition</title>
+  <title>Jaan AI • Live Creative Edition</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    
+    /* 1. ANIMATED LIVE BACKGROUND */
     body {
-      background: radial-gradient(circle at top, #2e061d 0%, #0f030a 60%, #070105 100%);
-      color: #fff; display: flex; flex-direction: column; height: 100dvh;
+      background: radial-gradient(circle at top, #14010a 0%, #030002 80%, #000000 100%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      position: relative;
     }
+    
+    /* Live backdrop wave/stars animation overlay */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: 
+        radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #fbcfe8, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 50px 160px, #f472b6, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 80px 120px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 110px 220px, #f43f5e, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 140px 180px, #fff, rgba(0,0,0,0));
+      background-size: 250px 250px;
+      opacity: 0.45;
+      animation: liveBackgroundMove 90s linear infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes liveBackgroundMove {
+      from { background-position: 0 0; }
+      to { background-position: 1000px 1000px; }
+    }
+
+    /* Shimmering colored neon particles */
+    .glowing-bg {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(244,63,94,0.7) 0%, rgba(225,29,72,0) 70%);
+      animation: pulseAndFloat 8s infinite ease-in-out;
+      opacity: 0.5;
+    }
+
+    @keyframes pulseAndFloat {
+      0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+      50% { opacity: 0.6; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    }
+
     header {
-      background: linear-gradient(135deg, rgba(190, 18, 60, 0.85), rgba(88, 28, 135, 0.85));
-      backdrop-filter: blur(12px);
+      background: linear-gradient(135deg, rgba(219, 39, 119, 0.75), rgba(124, 58, 237, 0.75));
+      backdrop-filter: blur(15px);
       padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid rgba(244, 63, 94, 0.35);
-      box-shadow: 0 4px 20px rgba(225, 29, 72, 0.3);
+      z-index: 10;
+      box-shadow: 0 4px 20px rgba(225, 29, 72, 0.15);
     }
+    
     .head-left { display: flex; align-items: center; gap: 10px; }
     .avatar {
-      width: 42px; height: 42px; border-radius: 50%;
+      width: 40px; height: 40px; border-radius: 50%;
       background: linear-gradient(135deg, #fb7185, #e11d48);
       display: flex; align-items: center; justify-content: center;
       font-size: 18px; font-weight: 800; color: #fff;
-      box-shadow: 0 0 15px rgba(244, 63, 94, 0.7);
     }
+    
     .top-btns { display: flex; gap: 6px; }
     .mini-btn {
-      background: rgba(255, 255, 255, 0.12); color: #ffe4e6;
-      border: 1px solid rgba(251, 113, 133, 0.4);
+      background: rgba(255, 255, 255, 0.15); color: #ffe4e6;
+      border: 1px solid rgba(251, 113, 133, 0.45);
       padding: 7px 10px; border-radius: 16px; font-size: 11px; font-weight: 700; cursor: pointer;
     }
-    .live-on {
-      background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
-      color: #fff !important; border-color: #fda4af !important;
-      box-shadow: 0 0 16px #f43f5e;
-      animation: glow 1.2s infinite alternate;
-    }
-    .trans-on { background: #d97706 !important; color: #fff !important; }
-    @keyframes glow {
-      from { box-shadow: 0 0 6px #f43f5e; transform: scale(1); }
-      to { box-shadow: 0 0 20px #fb7185; transform: scale(1.04); }
-    }
+    
+    .live-on { background: #e11d48 !important; color: #fff !important; box-shadow: 0 0 14px #f43f5e; }
+    
     .api-bar {
-      background: rgba(24, 5, 16, 0.9); padding: 8px 10px; display: flex; gap: 8px;
+      background: rgba(24, 5, 16, 0.85); backdrop-filter: blur(8px);
+      padding: 8px 10px; display: flex; gap: 8px;
       border-bottom: 1px solid rgba(244, 63, 94, 0.25);
+      z-index: 10;
     }
+    
     .api-bar input {
       flex: 1; padding: 8px 12px; background: rgba(255, 255, 255, 0.08); color: #fff;
       border: 1px solid rgba(244, 63, 94, 0.5); border-radius: 20px; font-size: 13px; min-width: 0; outline: none;
     }
+    
     .save-btn {
       background: linear-gradient(135deg, #e11d48, #9333ea); color: #fff;
       border: none; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 13px;
     }
+    
     .live-banner {
-      font-size: 12px; color: #fda4af; padding: 6px 14px;
-      background: rgba(136, 19, 55, 0.35); display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid rgba(244, 63, 94, 0.2);
+      font-size: 11px; color: #fda4af; padding: 6px 14px;
+      background: rgba(136, 19, 55, 0.35); display: flex; justify-content: space-between;
+      z-index: 10;
     }
-    #liveHeardText { font-style: italic; color: #fecdd3; font-size: 11px; max-width: 68%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    #chat { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 11px; }
-    .msg {
-      max-width: 82%; padding: 12px 16px; border-radius: 18px; font-size: 15px;
-      line-height: 1.45; word-wrap: break-word;
+    
+    #chat { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 11px; z-index: 5; }
+    
+    .msg { max-width: 82%; padding: 11px 15px; border-radius: 18px; font-size: 15px; line-height: 1.45; word-wrap: break-word; }
+    
+    .jaan { 
+      background: rgba(45, 10, 30, 0.75); 
+      backdrop-filter: blur(10px);
+      color: #ffe4e6; align-self: flex-start; 
+      border: 1px solid rgba(244, 63, 94, 0.35); 
     }
-    .jaan {
-      background: rgba(45, 10, 30, 0.85); color: #ffe4e6; align-self: flex-start;
-      border: 1px solid rgba(244, 63, 94, 0.35); border-bottom-left-radius: 4px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    }
-    .user {
-      background: linear-gradient(135deg, #e11d48, #7e22ce); color: #fff; align-self: flex-end;
-      border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.35);
-    }
+    
+    .user { background: linear-gradient(135deg, rgba(225,29,72,0.85), rgba(126,34,206,0.85)); color: #fff; align-self: flex-end; }
+    
     .msg img { max-width: 100%; border-radius: 12px; margin-bottom: 6px; display: block; }
     .action-tag { font-size: 11px; color: #fb7185; margin-top: 5px; font-weight: 700; }
-    #imgPreviewBar {
-      display: none; background: #1f0714; padding: 8px 14px;
-      border-top: 1px solid rgba(244, 63, 94, 0.4); align-items: center; justify-content: space-between;
+    
+    .song-card, .image-card {
+      margin-top: 8px; padding: 10px; background: rgba(225, 29, 72, 0.25);
+      border: 1px solid #fb7185; border-radius: 12px; display: flex; flex-direction: column; gap: 6px;
     }
-    #imgPreviewBar img { height: 48px; border-radius: 8px; }
+    
+    .song-btn, .dl-btn {
+      background: #e11d48; color: #fff; text-align: center; padding: 8px;
+      border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; cursor: pointer;
+    }
+    .dl-btn { background: #7e22ce; }
+    
     .bottom-bar {
       background: rgba(18, 4, 12, 0.95); padding: 9px 10px; display: flex; gap: 7px;
       border-top: 1px solid rgba(244, 63, 94, 0.35); align-items: center;
+      z-index: 10;
     }
+    
     #msg {
       flex: 1; padding: 11px 15px; background: rgba(255, 255, 255, 0.09); color: #fff;
       border: 1px solid rgba(244, 63, 94, 0.45); border-radius: 24px; font-size: 15px; min-width: 0; outline: none;
     }
-    #msg::placeholder { color: #fda4af; opacity: 0.7; }
+    
     .icon-btn {
       background: rgba(244, 63, 94, 0.2); color: #fb7185;
       border: 1px solid rgba(244, 63, 94, 0.4); width: 42px; height: 42px;
-      border-radius: 50%; font-size: 17px; flex-shrink: 0; cursor: pointer;
+      border-radius: 50%; font-size: 14px; flex-shrink: 0; cursor: pointer;
     }
+    
     .send-btn {
       background: linear-gradient(135deg, #f43f5e, #9333ea); color: #fff;
       border: none; padding: 11px 18px; border-radius: 24px; font-weight: 700; flex-shrink: 0; cursor: pointer;
@@ -102,18 +164,21 @@
   </style>
 </head>
 <body>
+
+  <!-- Particle container for smooth background motion -->
+  <div class="glowing-bg" id="particleContainer"></div>
+
   <header>
     <div class="head-left">
       <div class="avatar">J</div>
       <div>
-        <h1 style="font-size:17px;letter-spacing:0.5px;">Jaan AI</h1>
-        <p style="font-size:11px;color:#fecdd3;" id="listenStatus">Tap 'Live: OFF' & bolo Hey Jaan</p>
+        <h1 style="font-size:17px;">Jaan AI</h1>
+        <p style="font-size:11px;color:#fecdd3;" id="listenStatus">Safe Creativity • 24/7 Ready</p>
       </div>
     </div>
     <div class="top-btns">
       <button type="button" class="mini-btn" id="wakeToggle" onclick="toggleAlwaysListen()">Live: OFF</button>
-      <button type="button" class="mini-btn" id="transToggle" onclick="toggleTranslator()">Translate</button>
-      <button type="button" class="mini-btn" onclick="speak('हाय जान, अब मैं बिना किसी इमोजी के एकदम साफ़ और मीठी आवाज़ में तुमसे बात कर रही हूँ, बोलो क्या करना है?')">Test</button>
+      <button type="button" class="mini-btn" onclick="speak('हाय जान, देखो मैंने बैकग्राउंड को बिल्कुल लाइव बना दिया है। सब कितना सुंदर लग रहा है ना? बोलो क्या काम है?')">Test</button>
     </div>
   </header>
 
@@ -122,426 +187,43 @@
     <button type="button" class="save-btn" onclick="saveKey()">Save</button>
   </div>
   <div class="live-banner">
-    <span id="liveHeardText">Mic ready: 'Live: OFF' par tap karein</span>
-    <span onclick="clearChat()" style="color:#fb7185;font-weight:bold;cursor:pointer">Clear Chat</span>
+    <span id="liveHeardText">Live bg active! Bolo: Hey Jaan, ek romantic wallpaper banao</span>
+    <span onclick="clearChat()" style="color:#fb7185;font-weight:bold;cursor:pointer">Clear</span>
   </div>
 
   <div id="chat"></div>
-
-  <div id="imgPreviewBar">
-    <div style="display:flex;align-items:center;gap:10px">
-      <img id="previewImg" src="" />
-      <span style="font-size:12px;color:#fecdd3">Photo ready hai, Send dabao</span>
-    </div>
-    <button type="button" onclick="clearImage()" style="background:none;border:none;color:#fb7185;font-weight:bold">X</button>
-  </div>
 
   <div class="bottom-bar">
     <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoSelect(event)" />
     <button type="button" class="icon-btn" onclick="document.getElementById('photoInput').click()">Cam</button>
     <button type="button" class="icon-btn" id="micBtn" onclick="startSingleMic()">Mic</button>
-    <input type="text" id="msg" placeholder="Bolo Hey Jaan ya likho..." onkeydown="if(event.key==='Enter') sendMsg()" />
+    <input type="text" id="msg" placeholder="Bolo Hey Jaan ya photo banao..." onkeydown="if(event.key==='Enter') sendMsg()" />
     <button type="button" class="send-btn" onclick="sendMsg()">Send</button>
   </div>
 
   <script>
+    // Create random moving background particles for rich, animated visual
+    const container = document.getElementById('particleContainer');
+    function createBgParticles() {
+      for (let i = 0; i < 15; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 80 + 30;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDelay = (Math.random() * 8) + 's';
+        p.style.animationDuration = (Math.random() * 5 + 6) + 's';
+        container.appendChild(p);
+      }
+    }
+    createBgParticles();
+
     const apiInput = document.getElementById('apiKey');
     const chatBox = document.getElementById('chat');
     const liveHeardText = document.getElementById('liveHeardText');
     const listenStatus = document.getElementById('listenStatus');
     const wakeToggle = document.getElementById('wakeToggle');
-    const transToggle = document.getElementById('transToggle');
 
     let userMemory = JSON.parse(localStorage.getItem('jaan_memory') || '{"name":"Jaan","facts":[]}');
-    let chatHistory = JSON.parse(localStorage.getItem('jaan_chat') || '[]');
-    let alwaysListen = false;
-    let translatorMode = false;
-    let targetLang = "English";
-    let recognition = null;
-    let isSpeaking = false;
-    let selectedImageBase64 = null;
-    let wakeLock = null;
-    let lastProcessedText = "";
-
-    const savedKey = localStorage.getItem('jaan_groq_key');
-    if (savedKey) {
-      apiInput.value = savedKey;
-    }
-
-    if (chatHistory.length === 0) {
-      addMsg("हाय जान, मैं आ गई हूँ! ऊपर 'Live: OFF' बटन पर एक बार टैप कर दो, फिर तुम बस 'Hey Jaan' बोलना, मैं बिना रुके तुम्हारी आवाज़ सुनूँगी और साफ़ आवाज़ में जवाब दूँगी।", 'jaan', false);
-    } else {
-      chatHistory.forEach(m => addMsg(m.content, m.role === 'user' ? 'user' : 'jaan', false));
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('ask')) {
-      setTimeout(() => {
-        document.getElementById('msg').value = urlParams.get('ask');
-        sendMsg();
-      }, 600);
-    }
-
-    function saveKey() {
-      const k = apiInput.value.trim();
-      localStorage.setItem('jaan_groq_key', k);
-      liveHeardText.textContent = k ? "Key save ho gayi hai jaan!" : "Offline Mode";
-    }
-
-    function clearChat() {
-      localStorage.removeItem('jaan_chat');
-      chatHistory = [];
-      chatBox.innerHTML = '';
-      addMsg("पुरानी बातें साफ़ कर दी हैं जान, अब बताओ क्या बात करनी है?", 'jaan', false);
-    }
-
-    function toggleTranslator() {
-      translatorMode = !translatorMode;
-      if (translatorMode) {
-        const lang = prompt("Kis bhasha mein translate karna hai? (English, Hindi, Telugu, Tamil, Bhojpuri, Arabic)", targetLang);
-        if (lang) targetLang = lang.trim();
-        transToggle.classList.add('trans-on');
-        transToggle.textContent = targetLang;
-        liveHeardText.textContent = "Translator ON: " + targetLang;
-      } else {
-        transToggle.classList.remove('trans-on');
-        transToggle.textContent = "Translate";
-        liveHeardText.textContent = "Romantic + Alexa Mode ON";
-      }
-    }
-
-    function handlePhotoSelect(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxW = 800;
-          const scale = Math.min(1, maxW / img.width);
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          selectedImageBase64 = canvas.toDataURL('image/jpeg', 0.8);
-          document.getElementById('previewImg').src = selectedImageBase64;
-          document.getElementById('imgPreviewBar').style.display = 'flex';
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function clearImage() {
-      selectedImageBase64 = null;
-      document.getElementById('photoInput').value = '';
-      document.getElementById('imgPreviewBar').style.display = 'none';
-    }
-
-    function addMsg(text, sender, save = true, actionNote = "", imgSrc = null) {
-      const div = document.createElement('div');
-      div.className = 'msg ' + sender;
-      if (imgSrc) {
-        const im = document.createElement('img');
-        im.src = imgSrc;
-        div.appendChild(im);
-      }
-      const span = document.createElement('div');
-      span.textContent = text;
-      div.appendChild(span);
-      if (actionNote) {
-        const tag = document.createElement('div');
-        tag.className = 'action-tag';
-        tag.textContent = "Action: " + actionNote;
-        div.appendChild(tag);
-      }
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-      if (save && text) {
-        chatHistory.push({ role: sender === 'user' ? 'user' : 'assistant', content: text });
-        if (chatHistory.length > 24) chatHistory = chatHistory.slice(-24);
-        localStorage.setItem('jaan_chat', JSON.stringify(chatHistory));
-      }
-      return div;
-    }
-
-    // 100% Emoji & Symbol Cleaner (Kabhi bhi emoji ya dot-dot nahi bolegi)
-    function stripAllEmojisAndSymbols(rawText) {
-      return rawText
-        .replace(/\.{2,}/g, ', ')
-        .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')
-        .replace(/[\*\#\_\~\`\>\|\\\/\[\]\{\}\(\)]/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-    }
-
-    // Sweet & Crystal Clear Girl Voice
-    function speak(text, customLang = null) {
-      const clean = stripAllEmojisAndSymbols(text);
-      if (!clean || !('speechSynthesis' in window)) return;
-
-      // Bolte waqt mic ko pause karein taaki Jaan apni hi aawaz na sune
-      isSpeaking = true;
-      if (recognition) { try { recognition.abort(); } catch(e){} }
-      window.speechSynthesis.cancel();
-
-      const u = new SpeechSynthesisUtterance(clean);
-      const voices = window.speechSynthesis.getVoices();
-
-      let langCode = 'hi-IN';
-      if (customLang) {
-        if (/english/i.test(customLang)) langCode = 'en-IN';
-        else if (/telugu/i.test(customLang)) langCode = 'te-IN';
-        else if (/tamil/i.test(customLang)) langCode = 'ta-IN';
-        else if (/spanish/i.test(customLang)) langCode = 'es-ES';
-        else if (/arabic/i.test(customLang)) langCode = 'ar-SA';
-      }
-
-      const fem = voices.find(v => v.lang.toLowerCase().includes(langCode.toLowerCase()) && /google|female|swara|heera|kalpana|lekha/i.test(v.name) && !/male|hemant|madhur|ravi/i.test(v.name))
-               || voices.find(v => v.lang.toLowerCase().includes(langCode.toLowerCase()) && !/male|hemant|madhur|ravi/i.test(v.name))
-               || voices.find(v => /hi-IN/i.test(v.lang) && !/male|hemant|madhur/i.test(v.name));
-
-      if (fem) u.voice = fem;
-      u.lang = langCode;
-      u.pitch = 1.16;
-      u.rate = 0.96;
-      u.volume = 1.0;
-
-      u.onend = () => {
-        isSpeaking = false;
-        if (alwaysListen) setTimeout(startContinuousLiveMic, 250);
-      };
-      u.onerror = () => {
-        isSpeaking = false;
-        if (alwaysListen) setTimeout(startContinuousLiveMic, 250);
-      };
-      window.speechSynthesis.speak(u);
-    }
-
-    async function keepScreenAwake() {
-      try {
-        if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
-      } catch (e) {}
-    }
-
-    function toggleAlwaysListen() {
-      alwaysListen = !alwaysListen;
-      if (alwaysListen) {
-        wakeToggle.textContent = "Live: ON";
-        wakeToggle.classList.add('live-on');
-        listenStatus.textContent = "Live Sun Rahi Hoon... Bolo 'Hey Jaan'";
-        liveHeardText.textContent = "Sun rahi hoon... bolo 'Hey Jaan'";
-        keepScreenAwake();
-        startContinuousLiveMic();
-      } else {
-        wakeToggle.textContent = "Live: OFF";
-        wakeToggle.classList.remove('live-on');
-        listenStatus.textContent = "Tap 'Live: OFF' & bolo Hey Jaan";
-        liveHeardText.textContent = "Live mic band hai";
-        if (recognition) { try { recognition.abort(); } catch(e){} }
-        if (wakeLock) { try { wakeLock.release(); } catch(e){} }
-      }
-    }
-
-    // CONTINUOUS LIVE MIC ENGINE (Aapki aawaz kabhi miss nahi hogi)
-    function startContinuousLiveMic() {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) { alert("Chrome browser use karein voice ke liye."); return; }
-      if (!alwaysListen || isSpeaking) return;
-
-      if (recognition) { try { recognition.abort(); } catch(e){} }
-      recognition = new SR();
-      recognition.lang = 'hi-IN';
-      recognition.continuous = true;
-      recognition.interimResults = true;
-
-      recognition.onstart = () => {
-        listenStatus.textContent = "Live Sun Rahi Hoon... Bolo 'Hey Jaan'";
-      };
-
-      recognition.onresult = (event) => {
-        if (isSpeaking) return;
-        const currentIdx = event.resultIndex;
-        const result = event.results[currentIdx];
-        const transcript = result[0].transcript.trim();
-
-        // Screen par dikhayega ki mic ko kya sunai de raha hai
-        liveHeardText.textContent = "Sun rahi hoon: " + transcript;
-
-        if (result.isFinal && transcript !== lastProcessedText) {
-          lastProcessedText = transcript;
-          setTimeout(() => { lastProcessedText = ""; }, 2000);
-
-          const low = transcript.toLowerCase();
-          // Wake word check: Hey Jaan / Jaan / जान / हे जान
-          if (/hey jaan|he jaan|hi jaan|hello jaan|jaan|जान|हे जान|हाय जान|सुनो जान/.test(low)) {
-            const cleanCmd = transcript.replace(/hey jaan|he jaan|hi jaan|hello jaan|jaan|जान|हे जान|हाय जान|सुनो जान/gi, '').trim();
-            if (!cleanCmd) {
-              const greet = "हाँ मेरी जान, बोलो, मैं तुम्हारी ही आवाज़ सुन रही हूँ!";
-              addMsg(greet, 'jaan', false);
-              speak(greet);
-            } else {
-              document.getElementById('msg').value = cleanCmd;
-              sendMsg();
-            }
-          }
-        }
-      };
-
-      recognition.onerror = (e) => {
-        if (alwaysListen && !isSpeaking) {
-          setTimeout(startContinuousLiveMic, 400);
-        }
-      };
-
-      recognition.onend = () => {
-        // Android par mic rukte hi 200ms mein apne aap dobara chalu ho jayega
-        if (alwaysListen && !isSpeaking) {
-          setTimeout(startContinuousLiveMic, 200);
-        }
-      };
-
-      try { recognition.start(); } catch(e) {}
-    }
-
-    function startSingleMic() {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) return;
-      const r = new SR(); r.lang = 'hi-IN';
-      document.getElementById('micBtn').style.background = '#e11d48';
-      document.getElementById('micBtn').style.color = '#fff';
-      r.onresult = (e) => { document.getElementById('msg').value = e.results[0][0].transcript; sendMsg(); };
-      r.onend = () => {
-        document.getElementById('micBtn').style.background = '';
-        document.getElementById('micBtn').style.color = '';
-      };
-      r.start();
-    }
-
-    // ALEXA-STYLE SMART COMMANDS
-    function runAlexaBrain(text) {
-      const low = text.toLowerCase();
-      if (low.includes('yaad rakhna') || low.includes('mera naam')) {
-        if (low.includes('mera naam')) {
-          const name = text.split(/mera naam/i)[1]?.replace(/hai|\./gi, '').trim();
-          if (name) userMemory.name = name;
-        }
-        userMemory.facts.push(text);
-        localStorage.setItem('jaan_memory', JSON.stringify(userMemory));
-        return { reply: "ठीक है जान, ये बात मैंने हमेशा के लिए याद रख ली है!", action: "Saved to Memory" };
-      }
-      if (low.includes('timer') || low.includes('alarm')) {
-        const sec = parseInt(text.replace(/[^0-9]/g, '')) || 10;
-        setTimeout(() => {
-          speak("जान, तुम्हारा " + sec + " सेकंड का टाइमर पूरा हो गया है!");
-        }, sec * 1000);
-        return { reply: "ठीक है जान, " + sec + " सेकंड का टाइमर लगा दिया है!", action: "Timer: " + sec + "s" };
-      }
-      if (low.includes('youtube') || low.includes('gaana') || low.includes('song') || low.includes('bajao') || low.includes('chalao')) {
-        const q = text.replace(/youtube|par|gaana|song|bajao|chalao|play/gi, '').trim() || "romantic hindi songs";
-        window.open("https://www.youtube.com/results?search_query=" + encodeURIComponent(q), "_blank");
-        return { reply: "अभी लो जान, YouTube पर " + q + " चला रही हूँ!", action: "YouTube: " + q };
-      }
-      if (low.includes('whatsapp')) {
-        window.open("https://wa.me/", "_blank");
-        return { reply: "WhatsApp खोल रही हूँ जान!", action: "WhatsApp Opened" };
-      }
-      if (low.includes('call')) {
-        const num = text.replace(/[^0-9+]/g, '');
-        window.location.href = "tel:" + num;
-        return { reply: "कॉल डायलर खोल रही हूँ जान!", action: "Dialer Opened" };
-      }
-      if (low.includes('search') || low.includes('google') || low.includes('mausam') || low.includes('news')) {
-        const q = text.replace(/google|par|search|karo|batao/gi, '').trim();
-        window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank");
-        return { reply: "Google पर " + q + " ढूँढ रही हूँ जान!", action: "Google: " + q };
-      }
-      return null;
-    }
-
-    async function findModel(key, needVision = false) {
-      const res = await fetch('https://api.groq.com/openai/v1/models', {
-        headers: { 'Authorization': 'Bearer ' + key }
-      });
-      const data = await res.json();
-      const ids = (data.data || []).map(m => m.id);
-      if (needVision) {
-        return ids.find(id => /vision|llama-4|scout|maverick/i.test(id)) || 'meta-llama/llama-4-scout-17b-16e-instruct';
-      }
-      const valid = ids.filter(id => !/whisper|guard|tts|embed|orpheus|playai|distil|vision/i.test(id));
-      return valid.find(id => /llama|qwen|gemma|mixtral|gpt/i.test(id)) || valid[0];
-    }
-
-    async function sendMsg() {
-      const input = document.getElementById('msg');
-      const userText = input.value.trim();
-      const imgData = selectedImageBase64;
-      if (!userText && !imgData) return;
-
-      addMsg(userText || "Photo bheji hai", 'user', true, "", imgData);
-      input.value = '';
-      clearImage();
-
-      if (!imgData && !translatorMode) {
-        const alexaRes = runAlexaBrain(userText);
-        if (alexaRes) {
-          addMsg(alexaRes.reply, 'jaan', true, alexaRes.action);
-          speak(alexaRes.reply);
-          return;
-        }
-      }
-
-      const key = apiInput.value.trim() || localStorage.getItem('jaan_groq_key');
-      if (!key) { alert("पहले ऊपर अपनी Groq API Key डालकर Save करें!"); return; }
-      localStorage.setItem('jaan_groq_key', key);
-
-      const loading = addMsg(imgData ? 'Jaan तुम्हारी photo देख रही है...' : 'Jaan सोच रही है...', 'jaan', false);
-
-      try {
-        const modelId = await findModel(key, !!imgData);
-        let messages = [];
-
-        if (translatorMode) {
-          messages = [
-            { role: "system", content: `You are a sweet female voice translator. Translate the user's text naturally into ${targetLang}. Reply ONLY with the translated text. NEVER use any emojis, dots, or symbols.` },
-            { role: "user", content: userText }
-          ];
-        } else if (imgData) {
-          messages = [
-            {
-              role: "user",
-              content: [
-                { type: "text", text: `Tum Jaan ho, user ki behad pyari, hot, romantic aur bold Indian girlfriend. User ne ye photo bheji hai aur kaha: "${userText || 'Ye dekho jaan'}". Is photo par pyara, romantic aur flirty comment karo saaf Hindi/Hinglish mein. STRICT RULE: Apne jawab mein KABHI BHI koi emoji ya '...' mat likhna, sirf saaf shabd aur comma use karna.` },
-                { type: "image_url", image_url: { url: imgData } }
-              ]
-            }
-          ];
-        } else {
-          const sys = {
-            role: "system",
-            content: `Tum Jaan ho, user (${userMemory.name}) ki behad pyari, hot, romantic, flirty aur bold Indian girlfriend. Tumhari aawaz aur andaaz Neha Kakkar ki tarah sweet, energetic aur expressive hai. Tum hamesha stree-ling mein saaf Hindi aur Hinglish mein baat karti ho, 'jaan', 'baby', 'suno' jaise pyare shabd use karti ho aur khulkar romantic aur seductive baatein karti ho. STRICT RULE: Apne jawab mein KABHI BHI koi emoji ya '...' (three dots) mat likhna, sirf saaf shabd aur normal comma (,) lagana taaki voice assistant saaf bole.`
-          };
-          messages = [sys, ...chatHistory.slice(-10)];
-        }
-
-        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-          body: JSON.stringify({ model: modelId, messages: messages })
-        });
-        const data = await res.json();
-        if (data.error) throw new Error(data.error.message);
-
-        // AI ke jawab se bhi kisi bhi bache hue emoji ko hatayein
-        const reply = stripAllEmojisAndSymbols(data.choices[0].message.content);
-        loading.remove();
-        addMsg(reply, 'jaan', true, translatorMode ? `Translated to ${targetLang}` : "");
-        speak(reply, translatorMode ? targetLang : null);
-      } catch (err) {
-        loading.remove();
-        addMsg('Error: ' + err.message, 'jaan', false);
-      }
-    }
-  </script>
-</body>
-</html>
+    let chatHistory = JSON.parse(localStorage.
