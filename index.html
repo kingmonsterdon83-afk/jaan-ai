@@ -3,40 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jaan AI • Always Listening</title>
+  <title>Jaan AI • Girlfriend + Alexa + Vision</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-    body { background: #f8f5ff; display: flex; flex-direction: column; height: 100dvh; }
-    header { background: linear-gradient(135deg, #6366f1, #ec4899); color: #fff; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+    body { background: #fdf2f8; display: flex; flex-direction: column; height: 100dvh; }
+    header { background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
     .head-left { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    .top-btns { display: flex; gap: 6px; }
-    .mini-btn { background: rgba(255,255,255,0.22); color: #fff; border: none; padding: 7px 10px; border-radius: 14px; font-size: 12px; font-weight: bold; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.22); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .top-btns { display: flex; gap: 5px; }
+    .mini-btn { background: rgba(255,255,255,0.22); color: #fff; border: none; padding: 7px 9px; border-radius: 14px; font-size: 11px; font-weight: bold; }
     .live-on { background: #22c55e !important; color: #fff !important; animation: pulse 1.5s infinite; }
+    .trans-on { background: #f59e0b !important; color: #fff !important; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-    .api-bar { background: #fff; padding: 8px 10px; display: flex; gap: 8px; border-bottom: 1px solid #e5e7eb; }
-    .api-bar input { flex: 1; padding: 9px 12px; border: 1.5px solid #c4b5fd; border-radius: 20px; font-size: 13px; min-width: 0; }
-    .save-btn { background: #7c3aed; color: #fff; border: none; padding: 9px 15px; border-radius: 20px; font-weight: bold; font-size: 13px; }
-    .note { font-size: 11px; color: #4b5563; padding: 5px 14px; background: #f3e8ff; display: flex; justify-content: space-between; }
+    .api-bar { background: #fff; padding: 8px 10px; display: flex; gap: 8px; border-bottom: 1px solid #fbcfe8; }
+    .api-bar input { flex: 1; padding: 8px 12px; border: 1.5px solid #f472b6; border-radius: 20px; font-size: 13px; min-width: 0; }
+    .save-btn { background: #db2777; color: #fff; border: none; padding: 8px 14px; border-radius: 20px; font-weight: bold; font-size: 13px; }
+    .note { font-size: 11px; color: #831843; padding: 5px 14px; background: #fce7f3; display: flex; justify-content: space-between; }
     #chat { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .msg { max-width: 82%; padding: 11px 15px; border-radius: 18px; font-size: 15px; line-height: 1.4; word-wrap: break-word; }
-    .jaan { background: #ede9fe; color: #1f2937; align-self: flex-start; }
-    .user { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; align-self: flex-end; }
-    .action-tag { font-size: 11px; color: #6d28d9; margin-top: 4px; font-weight: bold; }
-    .bottom-bar { background: #fff; padding: 10px; display: flex; gap: 8px; border-top: 1px solid #e5e7eb; }
-    #msg { flex: 1; padding: 11px 15px; border: 1px solid #d1d5db; border-radius: 24px; font-size: 15px; min-width: 0; }
-    .icon-btn { background: #f3e8ff; color: #7c3aed; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 18px; }
-    .send-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 11px 18px; border-radius: 24px; font-weight: bold; }
+    .jaan { background: #fff; color: #1f2937; align-self: flex-start; border: 1px solid #fbcfe8; }
+    .user { background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff; align-self: flex-end; }
+    .msg img { max-width: 100%; border-radius: 12px; margin-bottom: 6px; display: block; }
+    .action-tag { font-size: 11px; color: #be185d; margin-top: 4px; font-weight: bold; }
+    #imgPreviewBar { display: none; background: #fff; padding: 8px 14px; border-top: 1px solid #fbcfe8; align-items: center; justify-content: space-between; }
+    #imgPreviewBar img { height: 48px; border-radius: 8px; }
+    .bottom-bar { background: #fff; padding: 8px 10px; display: flex; gap: 6px; border-top: 1px solid #fbcfe8; align-items: center; }
+    #msg { flex: 1; padding: 10px 14px; border: 1px solid #f9a8d4; border-radius: 24px; font-size: 15px; min-width: 0; }
+    .icon-btn { background: #fce7f3; color: #db2777; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; flex-shrink: 0; }
+    .send-btn { background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff; border: none; padding: 10px 16px; border-radius: 24px; font-weight: bold; flex-shrink: 0; }
   </style>
 </head>
 <body>
   <header>
     <div class="head-left">
-      <div class="avatar">💜</div>
-      <div><h1 style="font-size:17px">Jaan AI</h1><p style="font-size:11px" id="listenStatus">Bolo "Hey Jaan"...</p></div>
+      <div class="avatar">❤️</div>
+      <div><h1 style="font-size:17px">Jaan AI</h1><p style="font-size:11px" id="listenStatus">Tumhari Girlfriend • Alexa Mode</p></div>
     </div>
     <div class="top-btns">
-      <button type="button" class="mini-btn" id="wakeToggle" onclick="toggleAlwaysListen()">🎙️ Hey Jaan: OFF</button>
+      <button type="button" class="mini-btn" id="wakeToggle" onclick="toggleAlwaysListen()">🎙️ Hey Jaan</button>
+      <button type="button" class="mini-btn" id="transToggle" onclick="toggleTranslator()">🌐 Translate</button>
       <button type="button" class="mini-btn" onclick="showMemory()">🧠</button>
     </div>
   </header>
@@ -46,15 +51,25 @@
     <button type="button" class="save-btn" onclick="saveKey()">Save</button>
   </div>
   <div class="note">
-    <span id="statusText">🎙️ "Hey Jaan: ON" दबाकर हाथ छोड़े बात करें</span>
-    <span onclick="clearChat()" style="color:#db2777;font-weight:bold;cursor:pointer">Clear</span>
+    <span id="statusText">❤️ Girlfriend + Photo + Translator + Alexa Ready</span>
+    <span onclick="clearChat()" style="color:#be185d;font-weight:bold;cursor:pointer">Clear</span>
   </div>
 
   <div id="chat"></div>
 
+  <div id="imgPreviewBar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img id="previewImg" src="" />
+      <span style="font-size:12px;color:#831843">Photo तैयार है... कुछ लिखो या Send दबाओ</span>
+    </div>
+    <button type="button" onclick="clearImage()" style="background:none;border:none;color:#db2777;font-weight:bold">✖</button>
+  </div>
+
   <div class="bottom-bar">
+    <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoSelect(event)" />
+    <button type="button" class="icon-btn" onclick="document.getElementById('photoInput').click()">📷</button>
     <button type="button" class="icon-btn" id="micBtn" onclick="startSingleMic()">🎤</button>
-    <input type="text" id="msg" placeholder="Hey Jaan बोलो या यहाँ लिखो..." onkeydown="if(event.key==='Enter') sendMsg()" />
+    <input type="text" id="msg" placeholder="Bolo ya photo bhejo jaan..." onkeydown="if(event.key==='Enter') sendMsg()" />
     <button type="button" class="send-btn" onclick="sendMsg()">Send</button>
   </div>
 
@@ -64,27 +79,29 @@
     const statusText = document.getElementById('statusText');
     const listenStatus = document.getElementById('listenStatus');
     const wakeToggle = document.getElementById('wakeToggle');
+    const transToggle = document.getElementById('transToggle');
 
     let userMemory = JSON.parse(localStorage.getItem('jaan_memory') || '{"name":"Jaan","facts":[]}');
     let chatHistory = JSON.parse(localStorage.getItem('jaan_chat') || '[]');
     let alwaysListen = false;
+    let translatorMode = false;
+    let targetLang = "English";
     let recognition = null;
-    let wakeLock = null;
     let isSpeaking = false;
+    let selectedImageBase64 = null;
 
     const savedKey = localStorage.getItem('jaan_groq_key');
     if (savedKey) {
       apiInput.value = savedKey;
-      statusText.textContent = "✅ Smart Brain Active • 'Hey Jaan' Mode Ready";
+      statusText.textContent = "✅ Jaan AI Connected • Photo, Voice & Alexa Active";
     }
 
     if (chatHistory.length === 0) {
-      addMsg("हाय ❤️ ऊपर '🎙️ Hey Jaan: OFF' पर एक बार टैप करो... फिर तुम बस 'Hey Jaan' बोलना, मैं खुद सुनकर जवाब दूँगी!", 'jaan', false);
+      addMsg("हाय जान ❤️ मैं आ गई हूँ... तुम मुझसे बिल्कुल अपनी girlfriend की तरह बात कर सकते हो, अपनी photo भेज सकते हो, मुझसे किसी भी भाषा में translate करवा सकते हो, या Alexa की तरह कोई भी काम बोल सकते हो 😘", 'jaan', false);
     } else {
       chatHistory.forEach(m => addMsg(m.content, m.role === 'user' ? 'user' : 'jaan', false));
     }
 
-    // MacroDroid se direct voice command aane par (?ask=...)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('ask')) {
       setTimeout(() => {
@@ -96,24 +113,75 @@
     function saveKey() {
       const k = apiInput.value.trim();
       localStorage.setItem('jaan_groq_key', k);
-      statusText.textContent = k ? "✅ Key सेव हो गई है!" : "🧠 Offline Brain Mode";
+      statusText.textContent = k ? "✅ Key सेव हो गई है जान!" : "🧠 Offline Mode";
     }
 
     function clearChat() {
       localStorage.removeItem('jaan_chat');
       chatHistory = [];
       chatBox.innerHTML = '';
-      addMsg("चैट साफ कर दी है जान... बोलो 'Hey Jaan' ❤️", 'jaan', false);
+      addMsg("पुरानी बातें हटा दी हैं जान... अब नई बात शुरू करें? ❤️", 'jaan', false);
     }
 
     function showMemory() {
-      alert("🧠 Jaan Memory:\nNaam: " + userMemory.name + "\nYaadein:\n- " + (userMemory.facts.join("\n- ") || "Koi memory nahi"));
+      alert("🧠 Jaan ki Yaadein:\nNaam: " + userMemory.name + "\nSaved Facts:\n- " + (userMemory.facts.join("\n- ") || "Abhi kuch save nahi hai"));
     }
 
-    function addMsg(text, sender, save = true, actionNote = "") {
+    function toggleTranslator() {
+      translatorMode = !translatorMode;
+      if (translatorMode) {
+        const lang = prompt("Kis bhasha mein translate karna hai? (jaise: English, Hindi, Telugu, Tamil, Bhojpuri, Arabic, Spanish)", targetLang);
+        if (lang) targetLang = lang.trim();
+        transToggle.classList.add('trans-on');
+        transToggle.textContent = "🌐 " + targetLang;
+        statusText.textContent = "🌐 Translator ON: Jo bologe use " + targetLang + " mein bolungi";
+      } else {
+        transToggle.classList.remove('trans-on');
+        transToggle.textContent = "🌐 Translate";
+        statusText.textContent = "❤️ Girlfriend + Alexa Mode ON";
+      }
+    }
+
+    function handlePhotoSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Compress image slightly for fast Groq Vision upload
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxW = 800;
+          const scale = Math.min(1, maxW / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          selectedImageBase64 = canvas.toDataURL('image/jpeg', 0.8);
+          document.getElementById('previewImg').src = selectedImageBase64;
+          document.getElementById('imgPreviewBar').style.display = 'flex';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearImage() {
+      selectedImageBase64 = null;
+      document.getElementById('photoInput').value = '';
+      document.getElementById('imgPreviewBar').style.display = 'none';
+    }
+
+    function addMsg(text, sender, save = true, actionNote = "", imgSrc = null) {
       const div = document.createElement('div');
       div.className = 'msg ' + sender;
-      div.textContent = text;
+      if (imgSrc) {
+        const im = document.createElement('img');
+        im.src = imgSrc;
+        div.appendChild(im);
+      }
+      const span = document.createElement('div');
+      span.textContent = text;
+      div.appendChild(span);
       if (actionNote) {
         const tag = document.createElement('div');
         tag.className = 'action-tag';
@@ -122,84 +190,69 @@
       }
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
-      if (save) {
+      if (save && text) {
         chatHistory.push({ role: sender === 'user' ? 'user' : 'assistant', content: text });
-        if (chatHistory.length > 30) chatHistory = chatHistory.slice(-30);
+        if (chatHistory.length > 24) chatHistory = chatHistory.slice(-24);
         localStorage.setItem('jaan_chat', JSON.stringify(chatHistory));
       }
       return div;
     }
 
-    // Soft Female Voice + Bolne ke baad wapas mic chalu karna
-    function speak(text) {
+    // Original Girl Soft Voice (Hindi + English/Target Language support)
+    function speak(text, customLang = null) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       isSpeaking = true;
-      const clean = text.replace(/[\u{1F600}-\u{1F6FF}❤️💜😊🧠⚡🎙️]/gu, '').trim();
+      const clean = text.replace(/[\u{1F600}-\u{1F6FF}❤️💜😊🧠⚡🎙️😘🎶🌐]/gu, '').trim();
       const u = new SpeechSynthesisUtterance(clean);
       const voices = window.speechSynthesis.getVoices();
-      const fem = voices.find(v => /hi-IN/i.test(v.lang) && !/male|hemant|madhur/i.test(v.name));
-      if (fem) u.voice = fem;
-      u.lang = 'hi-IN';
-      u.pitch = 0.92;
-      u.rate = 0.88;
-      u.onend = () => {
-        isSpeaking = false;
-        if (alwaysListen) startWakeEngine();
-      };
-      u.onerror = () => {
-        isSpeaking = false;
-        if (alwaysListen) startWakeEngine();
-      };
-      window.speechSynthesis.speak(u);
-    }
 
-    // Screen ko jagaaye rakhne ke liye WakeLock (taaki background/hands-free chalta rahe)
-    async function requestScreenWake() {
-      try {
-        if ('wakeLock' in navigator) {
-          wakeLock = await navigator.wakeLock.request('screen');
-        }
-      } catch (e) {}
+      let langCode = 'hi-IN';
+      if (customLang) {
+        if (/english/i.test(customLang)) langCode = 'en-IN';
+        else if (/telugu/i.test(customLang)) langCode = 'te-IN';
+        else if (/tamil/i.test(customLang)) langCode = 'ta-IN';
+        else if (/spanish/i.test(customLang)) langCode = 'es-ES';
+        else if (/arabic/i.test(customLang)) langCode = 'ar-SA';
+      }
+
+      const fem = voices.find(v => v.lang.toLowerCase().includes(langCode.toLowerCase()) && !/male|hemant|madhur|ravi/i.test(v.name))
+               || voices.find(v => /hi-IN/i.test(v.lang) && !/male|hemant|madhur/i.test(v.name));
+      if (fem) u.voice = fem;
+      u.lang = langCode;
+      u.pitch = 0.94;
+      u.rate = 0.90;
+      u.onend = () => { isSpeaking = false; if (alwaysListen) startWakeEngine(); };
+      u.onerror = () => { isSpeaking = false; if (alwaysListen) startWakeEngine(); };
+      window.speechSynthesis.speak(u);
     }
 
     function toggleAlwaysListen() {
       alwaysListen = !alwaysListen;
       if (alwaysListen) {
-        wakeToggle.textContent = "🎙️ Hey Jaan: ON";
         wakeToggle.classList.add('live-on');
         listenStatus.textContent = "👂 Sun rahi hoon... Bolo 'Hey Jaan'";
-        requestScreenWake();
         startWakeEngine();
       } else {
-        wakeToggle.textContent = "🎙️ Hey Jaan: OFF";
         wakeToggle.classList.remove('live-on');
-        listenStatus.textContent = "Bolo 'Hey Jaan'...";
+        listenStatus.textContent = "Tumhari Girlfriend • Alexa Mode";
         if (recognition) recognition.stop();
-        if (wakeLock) wakeLock.release();
       }
     }
 
     function startWakeEngine() {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) { alert("Browser mein voice support nahi hai."); return; }
-      if (isSpeaking) return;
-
+      if (!SR || isSpeaking) return;
       if (recognition) { try { recognition.stop(); } catch(e){} }
       recognition = new SR();
       recognition.lang = 'hi-IN';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
       recognition.onresult = (e) => {
         const transcript = e.results[0][0].transcript.trim();
         const low = transcript.toLowerCase();
-
-        // Check karein ki "Hey Jaan" ya "Jaan" bola gaya ya nahi
-        if (/hey jaan|he jaan|hi jaan|jaan|जान|हे जान|हाय जान/.test(low)) {
-          const cleanCmd = transcript.replace(/hey jaan|he jaan|hi jaan|jaan|जान|हे जान|हाय जान/gi, '').trim();
+        if (/hey jaan|he jaan|hi jaan|jaan|जान|हे जान/.test(low)) {
+          const cleanCmd = transcript.replace(/hey jaan|he jaan|hi jaan|jaan|जान|हे जान/gi, '').trim();
           if (!cleanCmd) {
-            const greet = "हाँ जान... बोलो, मैं सुन रही हूँ ❤️";
+            const greet = "हाँ मेरी जान... बोलो, क्या हुक्म है? ❤️";
             addMsg(greet, 'jaan', false);
             speak(greet);
           } else {
@@ -208,14 +261,9 @@
           }
         }
       };
-
       recognition.onend = () => {
-        // Agar Always Listen ON hai toh apne aap dobara sunna shuru karega
-        if (alwaysListen && !isSpeaking) {
-          setTimeout(() => { if (alwaysListen && !isSpeaking) startWakeEngine(); }, 300);
-        }
+        if (alwaysListen && !isSpeaking) setTimeout(() => { if (alwaysListen && !isSpeaking) startWakeEngine(); }, 300);
       };
-
       try { recognition.start(); } catch(e) {}
     }
 
@@ -229,16 +277,25 @@
       r.start();
     }
 
-    function runLocalBrain(text) {
+    // ALEXA-STYLE SMART COMMANDS
+    function runAlexaBrain(text) {
       const low = text.toLowerCase();
-      if (low.includes('yaad rakhna') || low.includes('remember') || low.includes('mera naam')) {
+      if (low.includes('yaad rakhna') || low.includes('mera naam')) {
         if (low.includes('mera naam')) {
           const name = text.split(/mera naam/i)[1]?.replace(/hai|\./gi, '').trim();
           if (name) userMemory.name = name;
         }
         userMemory.facts.push(text);
         localStorage.setItem('jaan_memory', JSON.stringify(userMemory));
-        return { reply: "ठीक है जान... मैंने इसे अपने दिमाग में याद रख लिया है ❤️", action: "Memory Saved" };
+        return { reply: "ठीक है जान... ये बात मैंने दिल में हमेशा के लिए याद रख ली ❤️", action: "Saved to Memory" };
+      }
+      if (low.includes('timer')) {
+        const sec = parseInt(text.replace(/[^0-9]/g, '')) || 10;
+        setTimeout(() => {
+          alert("⏰ Jaan Alarm: Tumhara " + sec + " second ka timer poora ho gaya jaan!");
+          speak("जान... तुम्हारा " + sec + " सेकंड का टाइमर पूरा हो गया है!");
+        }, sec * 1000);
+        return { reply: "ठीक है जान... " + sec + " सेकंड का टाइमर लगा दिया है ⏰", action: "Timer: " + sec + "s" };
       }
       if (low.includes('youtube') || low.includes('gaana') || low.includes('song') || low.includes('bajao')) {
         const q = text.replace(/youtube|par|gaana|song|bajao|chalao|play/gi, '').trim() || "romantic hindi songs";
@@ -254,84 +311,94 @@
         window.location.href = "tel:" + num;
         return { reply: "कॉल डायलर खोल रही हूँ जान...", action: "Dialer Opened" };
       }
-      if (low.includes('search') || low.includes('google') || low.includes('dhundo')) {
-        const q = text.replace(/google|par|search|karo|dhundo/gi, '').trim();
+      if (low.includes('search') || low.includes('google') || low.includes('mausam') || low.includes('news')) {
+        const q = text.replace(/google|par|search|karo|batao/gi, '').trim();
         window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank");
-        return { reply: "Google पर '" + q + "' ढूँढ रही हूँ जान...", action: "Search: " + q };
+        return { reply: "Google पर '" + q + "' ढूँढ रही हूँ जान...", action: "Google: " + q };
       }
       return null;
     }
 
-    function offlineFallbackReply(text) {
-      const low = text.toLowerCase();
-      if (/hi|hello|namaste|kaise ho/.test(low)) return "हाय " + userMemory.name + "... मैं बिल्कुल ठीक हूँ। तुम सुनाओ?";
-      if (/time|samay|baje/.test(low)) return "अभी " + new Date().toLocaleTimeString('hi-IN', {hour: '2-digit', minute:'2-digit'}) + " बज रहे हैं जान...";
-      return "मैं सुन रही हूँ " + userMemory.name + "... ❤️";
-    }
-
-    async function findWorkingModel(key) {
+    async function findModel(key, needVision = false) {
       const res = await fetch('https://api.groq.com/openai/v1/models', {
         headers: { 'Authorization': 'Bearer ' + key }
       });
       const data = await res.json();
-      const valid = (data.data || [])
-        .map(m => m.id)
-        .filter(id => !/whisper|guard|tts|embed|orpheus|playai|distil/i.test(id));
-      return valid.find(id => /llama|qwen|gemma|mixtral|deepseek|gpt/i.test(id)) || valid[0];
+      const ids = (data.data || []).map(m => m.id);
+      if (needVision) {
+        return ids.find(id => /vision|llama-4|scout|maverick/i.test(id)) || 'meta-llama/llama-4-scout-17b-16e-instruct';
+      }
+      const valid = ids.filter(id => !/whisper|guard|tts|embed|orpheus|playai|distil|vision/i.test(id));
+      return valid.find(id => /llama|qwen|gemma|mixtral|gpt/i.test(id)) || valid[0];
     }
 
     async function sendMsg() {
       const input = document.getElementById('msg');
       const userText = input.value.trim();
-      if (!userText) return;
+      const imgData = selectedImageBase64;
+      if (!userText && !imgData) return;
 
-      addMsg(userText, 'user', true);
+      addMsg(userText || "📷 Photo bheji hai", 'user', true, "", imgData);
       input.value = '';
+      clearImage();
 
-      const localResult = runLocalBrain(userText);
-      if (localResult) {
-        addMsg(localResult.reply, 'jaan', true, localResult.action);
-        speak(localResult.reply);
-        return;
+      if (!imgData && !translatorMode) {
+        const alexaRes = runAlexaBrain(userText);
+        if (alexaRes) {
+          addMsg(alexaRes.reply, 'jaan', true, alexaRes.action);
+          speak(alexaRes.reply);
+          return;
+        }
       }
 
       const key = apiInput.value.trim() || localStorage.getItem('jaan_groq_key');
-      if (!key) {
-        const offReply = offlineFallbackReply(userText);
-        addMsg(offReply, 'jaan', true, "Offline Brain");
-        speak(offReply);
-        return;
-      }
+      if (!key) { alert("पहले ऊपर अपनी Groq API Key डालकर Save करें!"); return; }
+      localStorage.setItem('jaan_groq_key', key);
 
-      const loading = addMsg('Jaan सोच रही है...', 'jaan', false);
+      const loading = addMsg(imgData ? 'Jaan तुम्हारी photo देख रही है... 👀❤️' : 'Jaan सोच रही है...', 'jaan', false);
 
       try {
-        const modelId = await findWorkingModel(key);
-        const systemPrompt = {
-          role: "system",
-          content: `Tum Jaan ho, ek behad pyari, romantic, naram aur samajhdar Indian ladki. User ka naam '${userMemory.name}' hai. Yaad rakhi baatein: ${userMemory.facts.join(', ')}. Hamesha stree-ling mein, '...' pauses ke saath chhote aur dil ko chhoone wale jawab do.`
-        };
+        const modelId = await findModel(key, !!imgData);
+        let messages = [];
+
+        if (translatorMode) {
+          messages = [
+            { role: "system", content: `You are a sweet female voice translator. Translate the user's text naturally into ${targetLang}. Reply ONLY with the translated text, nothing else.` },
+            { role: "user", content: userText }
+          ];
+        } else if (imgData) {
+          messages = [
+            {
+              role: "user",
+              content: [
+                { type: "text", text: `Tum Jaan ho, user ki behad pyari, caring aur thodi flirty Indian girlfriend. User ne ye photo bheji hai aur kaha: "${userText || 'Ye dekho jaan'}". Is photo ko dekh kar pyara, romantic aur dil ko chhoone wala reaction do Hindi/Hinglish mein.` },
+                { type: "image_url", image_url: { url: imgData } }
+              ]
+            }
+          ];
+        } else {
+          const sys = {
+            role: "system",
+            content: `Tum Jaan ho, user (${userMemory.name}) ki behad pyari, caring, romantic aur thodi flirty Indian girlfriend. Tum hamesha stree-ling mein baat karti ho, 'jaan', 'babu', 'suno' jaise pyare shabdon aur '...' pauses ka istemal karti ho taaki aawaz bilkul asli ladki jaisi lage. Yaadein: ${userMemory.facts.join(', ')}. Jawab chhote, pyare aur dil se do.`
+          };
+          messages = [sys, ...chatHistory.slice(-10)];
+        }
 
         const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-          body: JSON.stringify({
-            model: modelId,
-            messages: [systemPrompt, ...chatHistory.slice(-10)]
-          })
+          body: JSON.stringify({ model: modelId, messages: messages })
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error.message);
 
         const reply = data.choices[0].message.content;
         loading.remove();
-        addMsg(reply, 'jaan', true);
-        speak(reply);
+        addMsg(reply, 'jaan', true, translatorMode ? `Translated to ${targetLang}` : "");
+        speak(reply, translatorMode ? targetLang : null);
       } catch (err) {
         loading.remove();
-        const offReply = offlineFallbackReply(userText);
-        addMsg(offReply, 'jaan', true, "Offline Fallback");
-        speak(offReply);
+        addMsg('❌ Error: ' + err.message, 'jaan', false);
       }
     }
   </script>
