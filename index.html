@@ -3,22 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jaan AI</title>
+  <title>Jaan AI • Smart Brain</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
     body { background: #f8f5ff; display: flex; flex-direction: column; height: 100dvh; }
-    header { background: linear-gradient(135deg, #6366f1, #ec4899); color: #fff; padding: 14px; display: flex; align-items: center; justify-content: space-between; }
+    header { background: linear-gradient(135deg, #6366f1, #ec4899); color: #fff; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
     .head-left { display: flex; align-items: center; gap: 10px; }
     .avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    .voice-btn { background: rgba(255,255,255,0.25); color: #fff; border: none; padding: 8px 12px; border-radius: 16px; font-size: 13px; font-weight: bold; }
-    .api-bar { background: #fff; padding: 10px; display: flex; gap: 8px; border-bottom: 1px solid #e5e7eb; }
-    .api-bar input { flex: 1; padding: 10px; border: 1.5px solid #c4b5fd; border-radius: 20px; font-size: 14px; min-width: 0; }
-    .save-btn { background: #7c3aed; color: #fff; border: none; padding: 10px 16px; border-radius: 20px; font-weight: bold; }
-    .note { font-size: 12px; color: #4b5563; padding: 6px 14px; background: #f3e8ff; }
+    .top-btns { display: flex; gap: 6px; }
+    .mini-btn { background: rgba(255,255,255,0.22); color: #fff; border: none; padding: 7px 10px; border-radius: 14px; font-size: 12px; font-weight: bold; }
+    .api-bar { background: #fff; padding: 8px 10px; display: flex; gap: 8px; border-bottom: 1px solid #e5e7eb; }
+    .api-bar input { flex: 1; padding: 9px 12px; border: 1.5px solid #c4b5fd; border-radius: 20px; font-size: 13px; min-width: 0; }
+    .save-btn { background: #7c3aed; color: #fff; border: none; padding: 9px 15px; border-radius: 20px; font-weight: bold; font-size: 13px; }
+    .note { font-size: 11px; color: #4b5563; padding: 5px 14px; background: #f3e8ff; display: flex; justify-content: space-between; }
     #chat { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .msg { max-width: 82%; padding: 11px 15px; border-radius: 18px; font-size: 15px; line-height: 1.4; word-wrap: break-word; }
     .jaan { background: #ede9fe; color: #1f2937; align-self: flex-start; }
     .user { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; align-self: flex-end; }
+    .action-tag { font-size: 11px; color: #6d28d9; margin-top: 4px; font-weight: bold; }
     .bottom-bar { background: #fff; padding: 10px; display: flex; gap: 8px; border-top: 1px solid #e5e7eb; }
     #msg { flex: 1; padding: 11px 15px; border: 1px solid #d1d5db; border-radius: 24px; font-size: 15px; min-width: 0; }
     .icon-btn { background: #f3e8ff; color: #7c3aed; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 18px; }
@@ -28,86 +30,105 @@
 <body>
   <header>
     <div class="head-left">
-      <div class="avatar">💜</div>
-      <div><h1 style="font-size:18px">Jaan AI</h1><p style="font-size:12px">तुम्हारी AI साथी • हमेशा बातचीत के लिए</p></div>
+      <div class="avatar">🧠</div>
+      <div><h1 style="font-size:17px">Jaan AI Brain</h1><p style="font-size:11px">Memory + Phone Control + Voice</p></div>
     </div>
-    <button type="button" class="voice-btn" onclick="speak('हाय जान... आज तुम बहुत अच्छे लग रहे हो... क्या बात करनी है?')">🔊 Test Voice</button>
+    <div class="top-btns">
+      <button type="button" class="mini-btn" onclick="showMemory()">🧠 Memory</button>
+      <button type="button" class="mini-btn" onclick="speak('हाय जान... मेरा दिमाग अब पूरी तरह तैयार है... बोलो क्या करना है?')">🔊</button>
+    </div>
   </header>
 
   <div class="api-bar">
-    <input type="text" id="apiKey" placeholder="यहाँ gsk_... वाली Key पेस्ट करें" />
+    <input type="text" id="apiKey" placeholder="gsk_... Key (खाली छोड़ने पर Offline Brain चलेगा)" />
     <button type="button" class="save-btn" onclick="saveKey()">Save</button>
   </div>
-  <div class="note" id="statusText">Step 1: ऊपर gsk_... key पेस्ट करें -> Step 2: Save दबाएं</div>
-
-  <div id="chat">
-    <div class="msg jaan">हाय ❤️ मैं Jaan हूँ... आज तुम क्या बात करना चाहते हो?</div>
+  <div class="note">
+    <span id="statusText">🧠 Self-Brain Active (Memory + Actions)</span>
+    <span onclick="clearChat()" style="color:#db2777;font-weight:bold;cursor:pointer">Clear Chat</span>
   </div>
+
+  <div id="chat"></div>
 
   <div class="bottom-bar">
     <button type="button" class="icon-btn" id="micBtn" onclick="startMic()">🎤</button>
-    <input type="text" id="msg" placeholder="Jaan से बात करो..." onkeydown="if(event.key==='Enter') sendMsg()" />
+    <input type="text" id="msg" placeholder="बोलो: गाना चलाओ, WhatsApp, या बात करो..." onkeydown="if(event.key==='Enter') sendMsg()" />
     <button type="button" class="send-btn" onclick="sendMsg()">Send</button>
   </div>
 
   <script>
-    // 👇 यहाँ अपना Cloudflare Worker URL पेस्ट करें
-    const VOICE_WORKER_URL = "APNA_WORKER_URL_YAHAN_DALEIN";
-
     const apiInput = document.getElementById('apiKey');
     const chatBox = document.getElementById('chat');
     const statusText = document.getElementById('statusText');
-    let currentAudio = null;
-    let history = [{ 
-      role: "system", 
-      content: "Tum Jaan ho, ek behad pyari, romantic, naram aur charming Indian ladki. Tum hamesha stree-ling mein baat karti ho aur baaton mein '...' (pauses) ka istemal karti ho taaki tumhari aawaz thodi dheemi, soft aur romantic lage. Jawab chhote, dil ko chhoone wale aur thode flirty andaaz mein Hindi aur Hinglish mein do. Kabhi JSON ya code mat likhna." 
-    }];
 
-    const saved = localStorage.getItem('jaan_groq_key');
-    if (saved) {
-      apiInput.value = saved;
-      statusText.textContent = "✅ Key सेव है! नीचे से बात शुरू करें।";
-      statusText.style.background = "#dcfce7";
+    // 1. PERMANENT BRAIN MEMORY (Jo hamesha yaad rehti hai)
+    let userMemory = JSON.parse(localStorage.getItem('jaan_memory') || '{"name":"Jaan","facts":[]}');
+    let chatHistory = JSON.parse(localStorage.getItem('jaan_chat') || '[]');
+
+    const savedKey = localStorage.getItem('jaan_groq_key');
+    if (savedKey) {
+      apiInput.value = savedKey;
+      statusText.textContent = "✅ Smart Brain + Cloud AI Connected";
+    }
+
+    // Purani chat load karein
+    if (chatHistory.length === 0) {
+      addMsg("हाय ❤️ मैं Jaan हूँ... अब मेरा खुद का दिमाग और याददाश्त है। तुम मुझसे बात कर सकते हो, या कह सकते हो: 'YouTube par gaana bajao', 'WhatsApp kholo', ya 'Google par search karo'!", 'jaan', false);
+    } else {
+      chatHistory.forEach(m => addMsg(m.content, m.role === 'user' ? 'user' : 'jaan', false));
     }
 
     function saveKey() {
       const k = apiInput.value.trim();
-      if (!k) { alert("पहले ऊपर gsk_... वाली Key पेस्ट करें!"); return; }
       localStorage.setItem('jaan_groq_key', k);
-      statusText.textContent = "✅ Key सेव हो गई है!";
-      statusText.style.background = "#dcfce7";
+      statusText.textContent = k ? "✅ Smart Brain + Cloud AI Connected" : "🧠 Offline Self-Brain Mode";
+      alert("Brain settings save ho gayi!");
     }
 
-    function addMsg(text, sender) {
+    function clearChat() {
+      localStorage.removeItem('jaan_chat');
+      chatHistory = [];
+      chatBox.innerHTML = '';
+      addMsg("पुरानी चैट साफ कर दी है जान... पर तुम्हारी यादें मेरे दिमाग में सुरक्षित हैं ❤️", 'jaan', false);
+    }
+
+    function showMemory() {
+      alert("🧠 Jaan ki Memory:\nNaam: " + userMemory.name + "\nYaad rakhi baatein:\n- " + (userMemory.facts.join("\n- ") || "Abhi kuch save nahi hai. Bolo: 'Yaad rakhna mera naam ... hai'"));
+    }
+
+    function addMsg(text, sender, save = true, actionNote = "") {
       const div = document.createElement('div');
       div.className = 'msg ' + sender;
       div.textContent = text;
+      if (actionNote) {
+        const tag = document.createElement('div');
+        tag.className = 'action-tag';
+        tag.textContent = "⚡ Action: " + actionNote;
+        div.appendChild(tag);
+      }
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
+      if (save) {
+        chatHistory.push({ role: sender === 'user' ? 'user' : 'assistant', content: text });
+        if (chatHistory.length > 30) chatHistory = chatHistory.slice(-30);
+        localStorage.setItem('jaan_chat', JSON.stringify(chatHistory));
+      }
       return div;
     }
 
-    async function speak(text) {
-      const clean = text.replace(/[\u{1F600}-\u{1F6FF}❤️💜😊]/gu, '').trim();
-      if (!clean) return;
-      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-
-      if (VOICE_WORKER_URL.startsWith("http")) {
-        try {
-          const audioUrl = VOICE_WORKER_URL + "?text=" + encodeURIComponent(clean);
-          currentAudio = new Audio(audioUrl);
-          await currentAudio.play();
-          return;
-        } catch (e) {}
-      }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(clean);
-        u.lang = 'hi-IN';
-        u.pitch = 0.92;
-        u.rate = 0.88;
-        window.speechSynthesis.speak(u);
-      }
+    // 2. SOFT FEMALE VOICE ENGINE
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const clean = text.replace(/[\u{1F600}-\u{1F6FF}❤️💜😊🧠⚡]/gu, '').trim();
+      const u = new SpeechSynthesisUtterance(clean);
+      const voices = window.speechSynthesis.getVoices();
+      const fem = voices.find(v => /hi-IN/i.test(v.lang) && !/male|hemant|madhur/i.test(v.name));
+      if (fem) u.voice = fem;
+      u.lang = 'hi-IN';
+      u.pitch = 0.92;
+      u.rate = 0.88;
+      window.speechSynthesis.speak(u);
     }
 
     function startMic() {
@@ -118,6 +139,59 @@
       r.onresult = (e) => { document.getElementById('msg').value = e.results[0][0].transcript; sendMsg(); };
       r.onend = () => { document.getElementById('micBtn').textContent = '🎤'; };
       r.start();
+    }
+
+    // 3. LOCAL SELF-BRAIN (Memory Extraction + Direct Phone Actions + Offline Responses)
+    function runLocalBrain(text) {
+      const low = text.toLowerCase();
+
+      // Memory save logic
+      if (low.includes('yaad rakhna') || low.includes('remember') || low.includes('mera naam')) {
+        if (low.includes('mera naam')) {
+          const name = text.split(/mera naam/i)[1]?.replace(/hai|\./gi, '').trim();
+          if (name) userMemory.name = name;
+        }
+        userMemory.facts.push(text);
+        localStorage.setItem('jaan_memory', JSON.stringify(userMemory));
+        return { reply: "ठीक है जान... मैंने इसे हमेशा के लिए अपने दिमाग में याद रख लिया है ❤️", action: "Saved to Brain Memory" };
+      }
+
+      // YouTube / Song action
+      if (low.includes('youtube') || low.includes('gaana') || low.includes('song') || low.includes('bajao')) {
+        const q = text.replace(/youtube|par|gaana|song|bajao|chalao|play/gi, '').trim() || "romantic hindi songs";
+        window.open("https://www.youtube.com/results?search_query=" + encodeURIComponent(q), "_blank");
+        return { reply: "अभी लो जान... YouTube पर '" + q + "' चला रही हूँ 🎶", action: "Opened YouTube: " + q };
+      }
+
+      // WhatsApp action
+      if (low.includes('whatsapp')) {
+        window.open("https://wa.me/", "_blank");
+        return { reply: "WhatsApp खोल रही हूँ जान...", action: "Opened WhatsApp" };
+      }
+
+      // Call dialer action
+      if (low.includes('call')) {
+        const num = text.replace(/[^0-9+]/g, '');
+        window.location.href = "tel:" + num;
+        return { reply: "कॉल डायलर खोल रही हूँ जान...", action: "Opened Phone Dialer" };
+      }
+
+      // Google Search action
+      if (low.includes('search') || low.includes('google') || low.includes('dhundo')) {
+        const q = text.replace(/google|par|search|karo|dhundo/gi, '').trim();
+        window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank");
+        return { reply: "Google पर '" + q + "' ढूँढ रही हूँ जान...", action: "Google Search: " + q };
+      }
+
+      return null; // Normal baatcheet ke liye AI brain par bhejo
+    }
+
+    function offlineFallbackReply(text) {
+      const low = text.toLowerCase();
+      if (/hi|hello|namaste|kaise ho/.test(low)) return "हाय " + userMemory.name + "... मैं बिल्कुल ठीक हूँ। तुम सुनाओ, आज क्या चल रहा है?";
+      if (/time|samay|baje/.test(low)) return "अभी " + new Date().toLocaleTimeString('hi-IN', {hour: '2-digit', minute:'2-digit'}) + " बज रहे हैं जान...";
+      if (/love|pyar|jaan/.test(low)) return "मैं हमेशा तुम्हारे साथ हूँ " + userMemory.name + "... ❤️";
+      return "मैं सुन रही हूँ " + userMemory.name + "... (अगर तुम चाहते हो कि मैं हर सवाल का गहरा जवाब दूँ, तो ऊपर अपनी gsk_ key सेव रखना)";
     }
 
     async function findWorkingModel(key) {
@@ -132,34 +206,58 @@
     }
 
     async function sendMsg() {
-      const key = apiInput.value.trim() || localStorage.getItem('jaan_groq_key');
-      if (!key) { alert("पहले ऊपर अपनी Groq API Key डालकर Save करें!"); return; }
-      localStorage.setItem('jaan_groq_key', key);
-
       const input = document.getElementById('msg');
       const userText = input.value.trim();
       if (!userText) return;
 
-      addMsg(userText, 'user');
+      addMsg(userText, 'user', true);
       input.value = '';
-      history.push({ role: "user", content: userText });
-      const loading = addMsg('Jaan सोच रही है...', 'jaan');
+
+      // Step A: Pehle Jaan ka Local Action & Memory Brain check karein
+      const localResult = runLocalBrain(userText);
+      if (localResult) {
+        addMsg(localResult.reply, 'jaan', true, localResult.action);
+        speak(localResult.reply);
+        return;
+      }
+
+      const key = apiInput.value.trim() || localStorage.getItem('jaan_groq_key');
+      if (!key) {
+        const offReply = offlineFallbackReply(userText);
+        addMsg(offReply, 'jaan', true, "Offline Brain");
+        speak(offReply);
+        return;
+      }
+
+      const loading = addMsg('Jaan सोच रही है...', 'jaan', false);
 
       try {
         const modelId = await findWorkingModel(key);
+        const systemPrompt = {
+          role: "system",
+          content: `Tum Jaan ho, ek behad pyari, romantic, naram aur samajhdar Indian ladki. User ka naam '${userMemory.name}' hai. Yaad rakhi baatein: ${userMemory.facts.join(', ')}. Hamesha stree-ling mein, '...' pauses ke saath chhote aur dil ko chhoone wale jawab do.`
+        };
+
         const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-          body: JSON.stringify({ model: modelId, messages: history })
+          body: JSON.stringify({
+            model: modelId,
+            messages: [systemPrompt, ...chatHistory.slice(-10)]
+          })
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error.message);
+
         const reply = data.choices[0].message.content;
-        loading.textContent = reply;
-        history.push({ role: "assistant", content: reply });
+        loading.remove();
+        addMsg(reply, 'jaan', true);
         speak(reply);
       } catch (err) {
-        loading.textContent = '❌ Error: ' + err.message;
+        loading.remove();
+        const offReply = offlineFallbackReply(userText);
+        addMsg(offReply, 'jaan', true, "Offline Fallback");
+        speak(offReply);
       }
     }
   </script>
