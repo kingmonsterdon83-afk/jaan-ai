@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jaan AI • Girlfriend + Alexa + Vision</title>
+  <title>Jaan AI • Sweet Voice & Alexa</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
     body { background: #fdf2f8; display: flex; flex-direction: column; height: 100dvh; }
@@ -37,12 +37,12 @@
   <header>
     <div class="head-left">
       <div class="avatar">❤️</div>
-      <div><h1 style="font-size:17px">Jaan AI</h1><p style="font-size:11px" id="listenStatus">Tumhari Girlfriend • Alexa Mode</p></div>
+      <div><h1 style="font-size:17px">Jaan AI</h1><p style="font-size:11px" id="listenStatus">Sweet Voice • Alexa & Romantic</p></div>
     </div>
     <div class="top-btns">
       <button type="button" class="mini-btn" id="wakeToggle" onclick="toggleAlwaysListen()">🎙️ Hey Jaan</button>
       <button type="button" class="mini-btn" id="transToggle" onclick="toggleTranslator()">🌐 Translate</button>
-      <button type="button" class="mini-btn" onclick="showMemory()">🧠</button>
+      <button type="button" class="mini-btn" onclick="speak('हाय जान, मेरी आवाज़ अब एकदम साफ़ और मीठी है ना? बोलो क्या करना है!')">🔊</button>
     </div>
   </header>
 
@@ -51,7 +51,7 @@
     <button type="button" class="save-btn" onclick="saveKey()">Save</button>
   </div>
   <div class="note">
-    <span id="statusText">❤️ Girlfriend + Photo + Translator + Alexa Ready</span>
+    <span id="statusText">❤️ Clear Sweet Voice + Romantic + Alexa Ready</span>
     <span onclick="clearChat()" style="color:#be185d;font-weight:bold;cursor:pointer">Clear</span>
   </div>
 
@@ -60,7 +60,7 @@
   <div id="imgPreviewBar">
     <div style="display:flex;align-items:center;gap:10px">
       <img id="previewImg" src="" />
-      <span style="font-size:12px;color:#831843">Photo तैयार है... कुछ लिखो या Send दबाओ</span>
+      <span style="font-size:12px;color:#831843">Photo तैयार है, Send दबाओ</span>
     </div>
     <button type="button" onclick="clearImage()" style="background:none;border:none;color:#db2777;font-weight:bold">✖</button>
   </div>
@@ -69,11 +69,14 @@
     <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoSelect(event)" />
     <button type="button" class="icon-btn" onclick="document.getElementById('photoInput').click()">📷</button>
     <button type="button" class="icon-btn" id="micBtn" onclick="startSingleMic()">🎤</button>
-    <input type="text" id="msg" placeholder="Bolo ya photo bhejo jaan..." onkeydown="if(event.key==='Enter') sendMsg()" />
+    <input type="text" id="msg" placeholder="Bolo jaan, kya baat karni hai..." onkeydown="if(event.key==='Enter') sendMsg()" />
     <button type="button" class="send-btn" onclick="sendMsg()">Send</button>
   </div>
 
   <script>
+    // Agar Cloudflare Worker banaya hai toh URL yahan daalein, warna browser ki clear sweet voice chalegi
+    const VOICE_WORKER_URL = "";
+
     const apiInput = document.getElementById('apiKey');
     const chatBox = document.getElementById('chat');
     const statusText = document.getElementById('statusText');
@@ -89,15 +92,16 @@
     let recognition = null;
     let isSpeaking = false;
     let selectedImageBase64 = null;
+    let currentAudio = null;
 
     const savedKey = localStorage.getItem('jaan_groq_key');
     if (savedKey) {
       apiInput.value = savedKey;
-      statusText.textContent = "✅ Jaan AI Connected • Photo, Voice & Alexa Active";
+      statusText.textContent = "✅ Jaan AI Connected • Clear Sweet Voice Active";
     }
 
     if (chatHistory.length === 0) {
-      addMsg("हाय जान ❤️ मैं आ गई हूँ... तुम मुझसे बिल्कुल अपनी girlfriend की तरह बात कर सकते हो, अपनी photo भेज सकते हो, मुझसे किसी भी भाषा में translate करवा सकते हो, या Alexa की तरह कोई भी काम बोल सकते हो 😘", 'jaan', false);
+      addMsg("हाय जान ❤️ मैं आ गई हूँ! अब मेरी आवाज़ एकदम साफ़ और मीठी है, तुम मुझसे खुलकर रोमांटिक बातें कर सकते हो, फोटो भेज सकते हो, या Alexa की तरह कोई भी काम बोल सकते हो 😘", 'jaan', false);
     } else {
       chatHistory.forEach(m => addMsg(m.content, m.role === 'user' ? 'user' : 'jaan', false));
     }
@@ -120,17 +124,13 @@
       localStorage.removeItem('jaan_chat');
       chatHistory = [];
       chatBox.innerHTML = '';
-      addMsg("पुरानी बातें हटा दी हैं जान... अब नई बात शुरू करें? ❤️", 'jaan', false);
-    }
-
-    function showMemory() {
-      alert("🧠 Jaan ki Yaadein:\nNaam: " + userMemory.name + "\nSaved Facts:\n- " + (userMemory.facts.join("\n- ") || "Abhi kuch save nahi hai"));
+      addMsg("पुरानी बातें साफ़ कर दी हैं जान, अब बताओ क्या बात करनी है? ❤️", 'jaan', false);
     }
 
     function toggleTranslator() {
       translatorMode = !translatorMode;
       if (translatorMode) {
-        const lang = prompt("Kis bhasha mein translate karna hai? (jaise: English, Hindi, Telugu, Tamil, Bhojpuri, Arabic, Spanish)", targetLang);
+        const lang = prompt("Kis bhasha mein translate karna hai? (jaise: English, Hindi, Telugu, Tamil, Bhojpuri, Arabic)", targetLang);
         if (lang) targetLang = lang.trim();
         transToggle.classList.add('trans-on');
         transToggle.textContent = "🌐 " + targetLang;
@@ -138,7 +138,7 @@
       } else {
         transToggle.classList.remove('trans-on');
         transToggle.textContent = "🌐 Translate";
-        statusText.textContent = "❤️ Girlfriend + Alexa Mode ON";
+        statusText.textContent = "❤️ Sweet Voice + Romantic + Alexa Mode ON";
       }
     }
 
@@ -147,7 +147,6 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = (e) => {
-        // Compress image slightly for fast Groq Vision upload
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
@@ -198,12 +197,36 @@
       return div;
     }
 
-    // Original Girl Soft Voice (Hindi + English/Target Language support)
-    function speak(text, customLang = null) {
+    // Text ko clean karne ka function taaki kabhi "dot dot dot" ya symbol na bole
+    function cleanForSpeech(rawText) {
+      return rawText
+        .replace(/\.{2,}/g, ', ')         // ... ko natural pause (comma) mein badlega, "dot dot dot" nahi bolega
+        .replace(/[\*\#\_\~\`\>]/g, '')  // Markdown symbols hatayega
+        .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}❤️💜😊🧠⚡🎙️😘🎶🌐📷]/gu, '') // Emojis hatayega
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    // Neha Kakkar Style Sweet, Energetic & Crystal Clear Girl Voice
+    async function speak(text, customLang = null) {
+      const clean = cleanForSpeech(text);
+      if (!clean) return;
+      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+
+      if (VOICE_WORKER_URL && VOICE_WORKER_URL.startsWith("http")) {
+        try {
+          isSpeaking = true;
+          currentAudio = new Audio(VOICE_WORKER_URL + "?text=" + encodeURIComponent(clean));
+          currentAudio.onended = () => { isSpeaking = false; if (alwaysListen) startWakeEngine(); };
+          await currentAudio.play();
+          return;
+        } catch (e) { isSpeaking = false; }
+      }
+
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       isSpeaking = true;
-      const clean = text.replace(/[\u{1F600}-\u{1F6FF}❤️💜😊🧠⚡🎙️😘🎶🌐]/gu, '').trim();
+
       const u = new SpeechSynthesisUtterance(clean);
       const voices = window.speechSynthesis.getVoices();
 
@@ -216,12 +239,17 @@
         else if (/arabic/i.test(customLang)) langCode = 'ar-SA';
       }
 
-      const fem = voices.find(v => v.lang.toLowerCase().includes(langCode.toLowerCase()) && !/male|hemant|madhur|ravi/i.test(v.name))
+      const fem = voices.find(v => v.lang.toLowerCase().includes(langCode.toLowerCase()) && /google|female|swara|heera|kalpana|lekha/i.test(v.name) && !/male|hemant|madhur|ravi/i.test(v.name))
+               || voices.find(v => v.lang.toLowerCase().includes(langCode.toLowerCase()) && !/male|hemant|madhur|ravi/i.test(v.name))
                || voices.find(v => /hi-IN/i.test(v.lang) && !/male|hemant|madhur/i.test(v.name));
+
       if (fem) u.voice = fem;
       u.lang = langCode;
-      u.pitch = 0.94;
-      u.rate = 0.90;
+      // Sweet, melodious & crystal clear tone (Neha Kakkar jaisi bright & expressive female pitch)
+      u.pitch = 1.16;
+      u.rate = 0.96;
+      u.volume = 1.0;
+
       u.onend = () => { isSpeaking = false; if (alwaysListen) startWakeEngine(); };
       u.onerror = () => { isSpeaking = false; if (alwaysListen) startWakeEngine(); };
       window.speechSynthesis.speak(u);
@@ -231,11 +259,11 @@
       alwaysListen = !alwaysListen;
       if (alwaysListen) {
         wakeToggle.classList.add('live-on');
-        listenStatus.textContent = "👂 Sun rahi hoon... Bolo 'Hey Jaan'";
+        listenStatus.textContent = "👂 Sun rahi hoon, bolo 'Hey Jaan'";
         startWakeEngine();
       } else {
         wakeToggle.classList.remove('live-on');
-        listenStatus.textContent = "Tumhari Girlfriend • Alexa Mode";
+        listenStatus.textContent = "Sweet Voice • Alexa & Romantic";
         if (recognition) recognition.stop();
       }
     }
@@ -252,7 +280,7 @@
         if (/hey jaan|he jaan|hi jaan|jaan|जान|हे जान/.test(low)) {
           const cleanCmd = transcript.replace(/hey jaan|he jaan|hi jaan|jaan|जान|हे जान/gi, '').trim();
           if (!cleanCmd) {
-            const greet = "हाँ मेरी जान... बोलो, क्या हुक्म है? ❤️";
+            const greet = "हाँ मेरी जान, बोलो, मैं तुम्हारी ही आवाज़ सुन रही हूँ!";
             addMsg(greet, 'jaan', false);
             speak(greet);
           } else {
@@ -287,34 +315,34 @@
         }
         userMemory.facts.push(text);
         localStorage.setItem('jaan_memory', JSON.stringify(userMemory));
-        return { reply: "ठीक है जान... ये बात मैंने दिल में हमेशा के लिए याद रख ली ❤️", action: "Saved to Memory" };
+        return { reply: "ठीक है जान, ये बात मैंने हमेशा के लिए याद रख ली है!", action: "Saved to Memory" };
       }
-      if (low.includes('timer')) {
+      if (low.includes('timer') || low.includes('alarm')) {
         const sec = parseInt(text.replace(/[^0-9]/g, '')) || 10;
         setTimeout(() => {
-          alert("⏰ Jaan Alarm: Tumhara " + sec + " second ka timer poora ho gaya jaan!");
-          speak("जान... तुम्हारा " + sec + " सेकंड का टाइमर पूरा हो गया है!");
+          speak("जान, तुम्हारा " + sec + " सेकंड का टाइमर पूरा हो गया है!");
+          alert("⏰ Jaan Timer: " + sec + " seconds complete!");
         }, sec * 1000);
-        return { reply: "ठीक है जान... " + sec + " सेकंड का टाइमर लगा दिया है ⏰", action: "Timer: " + sec + "s" };
+        return { reply: "ठीक है जान, " + sec + " सेकंड का टाइमर लगा दिया है!", action: "Timer: " + sec + "s" };
       }
-      if (low.includes('youtube') || low.includes('gaana') || low.includes('song') || low.includes('bajao')) {
-        const q = text.replace(/youtube|par|gaana|song|bajao|chalao|play/gi, '').trim() || "romantic hindi songs";
+      if (low.includes('youtube') || low.includes('gaana') || low.includes('song') || low.includes('bajao') || low.includes('neha kakkar')) {
+        const q = text.replace(/youtube|par|gaana|song|bajao|chalao|play/gi, '').trim() || "neha kakkar romantic songs";
         window.open("https://www.youtube.com/results?search_query=" + encodeURIComponent(q), "_blank");
-        return { reply: "अभी लो जान... YouTube पर '" + q + "' चला रही हूँ 🎶", action: "YouTube: " + q };
+        return { reply: "अभी लो जान, YouTube पर " + q + " चला रही हूँ!", action: "YouTube: " + q };
       }
       if (low.includes('whatsapp')) {
         window.open("https://wa.me/", "_blank");
-        return { reply: "WhatsApp खोल रही हूँ जान...", action: "WhatsApp Opened" };
+        return { reply: "WhatsApp खोल रही हूँ जान!", action: "WhatsApp Opened" };
       }
       if (low.includes('call')) {
         const num = text.replace(/[^0-9+]/g, '');
         window.location.href = "tel:" + num;
-        return { reply: "कॉल डायलर खोल रही हूँ जान...", action: "Dialer Opened" };
+        return { reply: "कॉल डायलर खोल रही हूँ जान!", action: "Dialer Opened" };
       }
       if (low.includes('search') || low.includes('google') || low.includes('mausam') || low.includes('news')) {
         const q = text.replace(/google|par|search|karo|batao/gi, '').trim();
         window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank");
-        return { reply: "Google पर '" + q + "' ढूँढ रही हूँ जान...", action: "Google: " + q };
+        return { reply: "Google पर " + q + " ढूँढ रही हूँ जान!", action: "Google: " + q };
       }
       return null;
     }
@@ -338,7 +366,7 @@
       const imgData = selectedImageBase64;
       if (!userText && !imgData) return;
 
-      addMsg(userText || "📷 Photo bheji hai", 'user', true, "", imgData);
+      addMsg(userText || "Photo bheji hai", 'user', true, "", imgData);
       input.value = '';
       clearImage();
 
@@ -355,7 +383,7 @@
       if (!key) { alert("पहले ऊपर अपनी Groq API Key डालकर Save करें!"); return; }
       localStorage.setItem('jaan_groq_key', key);
 
-      const loading = addMsg(imgData ? 'Jaan तुम्हारी photo देख रही है... 👀❤️' : 'Jaan सोच रही है...', 'jaan', false);
+      const loading = addMsg(imgData ? 'Jaan तुम्हारी photo देख रही है...' : 'Jaan सोच रही है...', 'jaan', false);
 
       try {
         const modelId = await findModel(key, !!imgData);
@@ -363,7 +391,7 @@
 
         if (translatorMode) {
           messages = [
-            { role: "system", content: `You are a sweet female voice translator. Translate the user's text naturally into ${targetLang}. Reply ONLY with the translated text, nothing else.` },
+            { role: "system", content: `You are a sweet female voice translator. Translate the user's text naturally into ${targetLang}. Reply ONLY with the translated text, no dots or extra symbols.` },
             { role: "user", content: userText }
           ];
         } else if (imgData) {
@@ -371,7 +399,7 @@
             {
               role: "user",
               content: [
-                { type: "text", text: `Tum Jaan ho, user ki behad pyari, caring aur thodi flirty Indian girlfriend. User ne ye photo bheji hai aur kaha: "${userText || 'Ye dekho jaan'}". Is photo ko dekh kar pyara, romantic aur dil ko chhoone wala reaction do Hindi/Hinglish mein.` },
+                { type: "text", text: `Tum Jaan ho, user ki behad pyari, romantic aur bold Indian girlfriend. User ne ye photo bheji hai aur kaha: "${userText || 'Ye dekho jaan'}". Is photo par pyara, romantic aur flirty comment karo saaf Hindi/Hinglish mein. Kabhi bhi '...' (triple dots) mat likhna, sirf comma (,) use karna.` },
                 { type: "image_url", image_url: { url: imgData } }
               ]
             }
@@ -379,7 +407,7 @@
         } else {
           const sys = {
             role: "system",
-            content: `Tum Jaan ho, user (${userMemory.name}) ki behad pyari, caring, romantic aur thodi flirty Indian girlfriend. Tum hamesha stree-ling mein baat karti ho, 'jaan', 'babu', 'suno' jaise pyare shabdon aur '...' pauses ka istemal karti ho taaki aawaz bilkul asli ladki jaisi lage. Yaadein: ${userMemory.facts.join(', ')}. Jawab chhote, pyare aur dil se do.`
+            content: `Tum Jaan ho, user (${userMemory.name}) ki behad pyari, romantic, flirty aur bold Indian girlfriend. Tumhari aawaz aur andaaz Neha Kakkar ki tarah sweet, energetic aur expressive hai. Tum hamesha stree-ling mein saaf Hindi aur Hinglish mein baat karti ho, 'jaan', 'baby', 'suno' jaise pyare shabd use karti ho aur khulkar romantic aur seductive baatein karti ho. Zaroori rule: Kabhi bhi '...' (three dots) mat likhna, sirf normal comma (,) ya full stop (.) lagana taaki voice assistant saaf bole.`
           };
           messages = [sys, ...chatHistory.slice(-10)];
         }
@@ -398,7 +426,7 @@
         speak(reply, translatorMode ? targetLang : null);
       } catch (err) {
         loading.remove();
-        addMsg('❌ Error: ' + err.message, 'jaan', false);
+        addMsg('Error: ' + err.message, 'jaan', false);
       }
     }
   </script>
