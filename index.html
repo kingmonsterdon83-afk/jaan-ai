@@ -31,7 +31,7 @@
       <div class="avatar">💜</div>
       <div><h1 style="font-size:18px">Jaan AI</h1><p style="font-size:12px">तुम्हारी AI साथी • हमेशा बातचीत के लिए</p></div>
     </div>
-    <button type="button" class="voice-btn" onclick="speak('हाय, मैं जान हूँ। मेरी आवाज़ कैसी लग रही है?')">🔊 Test Voice</button>
+    <button type="button" class="voice-btn" onclick="speak('हाय जान... आज तुम बहुत अच्छे लग रहे हो... क्या बात करनी है?')">🔊 Test Voice</button>
   </header>
 
   <div class="api-bar">
@@ -41,7 +41,7 @@
   <div class="note" id="statusText">Step 1: ऊपर gsk_... key पेस्ट करें -> Step 2: Save दबाएं</div>
 
   <div id="chat">
-    <div class="msg jaan">हाय ❤️ मैं Jaan हूँ। आज तुम क्या बात करना चाहते हो?</div>
+    <div class="msg jaan">हाय ❤️ मैं Jaan हूँ... आज तुम क्या बात करना चाहते हो?</div>
   </div>
 
   <div class="bottom-bar">
@@ -51,22 +51,17 @@
   </div>
 
   <script>
+    // 👇 यहाँ अपना Cloudflare Worker URL पेस्ट करें
+    const VOICE_WORKER_URL = "APNA_WORKER_URL_YAHAN_DALEIN";
+
     const apiInput = document.getElementById('apiKey');
     const chatBox = document.getElementById('chat');
     const statusText = document.getElementById('statusText');
-    let selectedVoice = null;
-    let history = [{ role: "system", content: "Tum Jaan ho, ek pyari Indian ladki (female AI assistant). Tum hamesha stree-ling (female gender, jaise 'main khush hoon', 'main kar rahi hoon') mein natural Hindi aur Hinglish mein chhote, pyare jawab deti ho. Kabhi JSON ya code mat likhna." }];
-
-    function loadFemaleVoice() {
-      const voices = window.speechSynthesis.getVoices();
-      selectedVoice =
-        voices.find(v => /hi-IN/i.test(v.lang) && /female|swara|heera|kalpana|lekha|google हिन्दी/i.test(v.name)) ||
-        voices.find(v => /hi-IN/i.test(v.lang) && !/male|hemant|madhur/i.test(v.name)) ||
-        voices.find(v => /en-IN/i.test(v.lang) && /female|neerja|veena|raveena/i.test(v.name)) ||
-        voices.find(v => /hi/i.test(v.lang));
-    }
-    window.speechSynthesis.onvoiceschanged = loadFemaleVoice;
-    loadFemaleVoice();
+    let currentAudio = null;
+    let history = [{ 
+      role: "system", 
+      content: "Tum Jaan ho, ek behad pyari, romantic, naram aur charming Indian ladki. Tum hamesha stree-ling mein baat karti ho aur baaton mein '...' (pauses) ka istemal karti ho taaki tumhari aawaz thodi dheemi, soft aur romantic lage. Jawab chhote, dil ko chhoone wale aur thode flirty andaaz mein Hindi aur Hinglish mein do. Kabhi JSON ya code mat likhna." 
+    }];
 
     const saved = localStorage.getItem('jaan_groq_key');
     if (saved) {
@@ -92,17 +87,27 @@
       return div;
     }
 
-    function speak(text) {
-      if (!('speechSynthesis' in window)) return;
-      loadFemaleVoice();
-      window.speechSynthesis.cancel();
-      const clean = text.replace(/[\u{1F600}-\u{1F6FF}❤️💜😊]/gu, '');
-      const u = new SpeechSynthesisUtterance(clean);
-      if (selectedVoice) u.voice = selectedVoice;
-      u.lang = 'hi-IN';
-      u.pitch = 1.18;
-      u.rate = 0.98;
-      window.speechSynthesis.speak(u);
+    async function speak(text) {
+      const clean = text.replace(/[\u{1F600}-\u{1F6FF}❤️💜😊]/gu, '').trim();
+      if (!clean) return;
+      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+
+      if (VOICE_WORKER_URL.startsWith("http")) {
+        try {
+          const audioUrl = VOICE_WORKER_URL + "?text=" + encodeURIComponent(clean);
+          currentAudio = new Audio(audioUrl);
+          await currentAudio.play();
+          return;
+        } catch (e) {}
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(clean);
+        u.lang = 'hi-IN';
+        u.pitch = 0.92;
+        u.rate = 0.88;
+        window.speechSynthesis.speak(u);
+      }
     }
 
     function startMic() {
